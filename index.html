@@ -826,14 +826,27 @@
                     .attr("font-weight", "700")
                     .text(exp.company);
 
-                // Year breakdown
+                // Year breakdown - consistent right side for all cards
+                const rightX = boxX + boxWidth - 12;
+                
                 group.append("text")
-                    .attr("x", textStartX)
-                    .attr("y", boxY + 58)
-                    .attr("fill", "#64748b")
-                    .attr("font-size", "11.5px")
+                    .attr("x", rightX)
+                    .attr("y", boxY + 42)
+                    .attr("text-anchor", "end")
+                    .attr("fill", "#94a3b8")
+                    .attr("font-size", "11px")
                     .attr("font-weight", "600")
-                    .text(`${exp.startYear} - ${exp.current ? 'Present' : exp.endYear} (${exp.endYear - exp.startYear} years)`);
+                    .text(`${exp.startYear} - ${exp.current ? 'Present' : exp.endYear}`);
+
+                // Duration on second line
+                group.append("text")
+                    .attr("x", rightX)
+                    .attr("y", boxY + 57)
+                    .attr("text-anchor", "end")
+                    .attr("fill", "#cbd5e1")
+                    .attr("font-size", "10px")
+                    .attr("font-weight", "500")
+                    .text(`${exp.endYear - exp.startYear} yrs`);
 
                 // Description (wrapped text) - 1 line only
                 const descLines = wrapText(exp.description, 45);
