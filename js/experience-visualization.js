@@ -118,18 +118,32 @@ function applyDropShadow(selection, blur = "0", spread = "2px 4px", color = "rgb
 // Create Interactive D3 Visualization
 function createVisualization() {
     const container = d3.select("#experience-visualization");
-    const containerWidth = Math.min(1100, window.innerWidth - 60);
-    const itemHeight = 240; // Height between cards (vertical spacing)
+    
+    // Responsive dimensions calculation
+    const containerElement = document.getElementById("experience-visualization");
+    let containerWidth = window.innerWidth < 768 ? window.innerWidth - 30 : Math.min(1100, window.innerWidth - 60);
+    
+    // Adjust spacing based on screen size
+    const isMobile = window.innerWidth < 640;
+    const isTablet = window.innerWidth < 1024;
+    
+    const itemHeight = isMobile ? 200 : 240; // Height between cards (vertical spacing)
     const cardHeight = 200; // Actual card height
-    const margin = { top: 60, right: 60, bottom: 100, left: 60 }; // Increased top and bottom
+    const margin = { 
+        top: isMobile ? 40 : 60, 
+        right: isMobile ? 30 : 60, 
+        bottom: isMobile ? 80 : 100, 
+        left: isMobile ? 30 : 60 
+    };
     const height = experiences.length * itemHeight + margin.top + margin.bottom;
-
 
     const svg = container.append("svg")
         .attr("width", containerWidth)
         .attr("height", height)
         .style("display", "block")
-        .style("margin", "0 auto");
+        .style("margin", "0 auto")
+        .attr("viewBox", `0 0 ${containerWidth} ${height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet");
 
     // Create timeline scale
     const xScale = d3.scaleLinear()
