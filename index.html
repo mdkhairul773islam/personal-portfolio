@@ -283,16 +283,16 @@
     </section>
 
     <!-- Experience Section -->
-    <section id="experience" class="py-24">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16" data-aos="fade-up">
+    <section id="experience" class="py-16 min-h-[96vh] flex items-center">
+        <div class="container mx-auto px-6 w-full">
+            <div class="text-center mb-12" data-aos="fade-up">
                 <span class="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-[#8B7355] to-[#A0826D] text-white text-sm font-semibold mb-4">
                     12+ Years of Excellence
                 </span>
-                <h2 class="text-5xl md:text-6xl font-bold mb-4">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
                     <span class="bg-gradient-to-r from-slate-800 via-[#8B7355] to-[#A0826D] bg-clip-text text-transparent">Work Experience</span>
                 </h2>
-                <p class="text-slate-600 max-w-2xl mx-auto text-lg">Building innovative solutions across diverse industries</p>
+                <p class="text-slate-600 max-w-2xl mx-auto text-base">Building innovative solutions across diverse industries</p>
             </div>
             
             <!-- D3.js Interactive Timeline Visualization -->
@@ -369,9 +369,9 @@
         function createVisualization() {
             const container = d3.select("#experience-visualization");
             const containerWidth = Math.min(1100, window.innerWidth - 60);
-            const itemHeight = 180;
-            const margin = { top: 40, right: 60, bottom: 60, left: 60 };
-            const height = experiences.length * itemHeight + margin.top + margin.bottom + 80;
+            const itemHeight = 140; // Reduced from 180
+            const margin = { top: 20, right: 60, bottom: 50, left: 60 }; // Reduced margins
+            const height = experiences.length * itemHeight + margin.top + margin.bottom + 60; // Reduced spacing
 
             const svg = container.append("svg")
                 .attr("width", containerWidth)
