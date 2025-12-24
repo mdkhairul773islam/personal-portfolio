@@ -559,6 +559,21 @@
                 .attr("stop-color", "#A0826D")
                 .attr("stop-opacity", 0.8);
 
+            // Technology-based color palette (define once, use everywhere)
+            const techColors = {
+                'Laravel': '#FF2D20',
+                'React': '#61DAFB',
+                'MySQL': '#4479A1',
+                'AWS': '#FF9900',
+                'PHP': '#777BB4',
+                'Vue.js': '#42B883',
+                'REST API': '#009688',
+                'CodeIgniter': '#EE4623',
+                'jQuery': '#0769AD',
+                'JavaScript': '#F7DF1E',
+                'HTML/CSS': '#E34F26'
+            };
+
             // Create experience items
             experiences.forEach((exp, i) => {
                 const yPos = i * itemHeight + margin.top;
@@ -708,6 +723,21 @@
                     .attr("stroke-width", exp.current ? 2.5 : 1.5)
                     .style("filter", exp.current ? "drop-shadow(0 8px 24px rgba(139,115,85,0.12))" : "drop-shadow(0 4px 12px rgba(0,0,0,0.06))");
 
+                // Add clip path to keep badges inside card
+                const clipId = `clip-${exp.id}-${i}`;
+                svg.append("defs").append("clipPath")
+                    .attr("id", clipId)
+                    .append("rect")
+                    .attr("x", boxX)
+                    .attr("y", boxY)
+                    .attr("width", boxWidth)
+                    .attr("height", boxHeight)
+                    .attr("rx", 18);
+                
+                // Create a container group for clipped content
+                const clippedGroup = group.append("g")
+                    .attr("clip-path", `url(#${clipId})`);
+
                 // Logo/Avatar circle
                 const logoX = boxX + 30;
                 const logoY = boxY + 32;
@@ -818,46 +848,110 @@
                         .text(descLines[0].substring(0, 48) + (descLines[0].length > 48 ? '...' : ''));
                 }
 
-                // Skills badges
-                let skillX = boxX + 18;
+                // Skills badges with tech colors and random swap animation
+                const skillsData = exp.skills.slice(0, 3).map((skill, si) => ({
+                    skill,
+                    color: techColors[skill] || exp.color,
+                    width: skill.length * 7.5 + 20,
+                    originalIndex: si
+                }));
+                
+                // Track order of skills
+                let skillOrder = skillsData.map((_, idx) => idx);
                 const skillY = boxY + boxHeight - 30;
-                exp.skills.slice(0, 3).forEach((skill, si) => {
-                    const skillWidth = skill.length * 7.5 + 20;
+                const skillSlotWidth = skillsData.map(s => s.width + 10);
+                
+                // Function to render badges based on current order
+                function renderBadges() {
+                    clippedGroup.selectAll(".badge-container").remove();
+                    let currentX = boxX + 18;
                     
-                    // Badge background
-                    group.append("rect")
-                        .attr("x", skillX)
-                        .attr("y", skillY)
-                        .attr("width", skillWidth)
-                        .attr("height", 24)
-                        .attr("rx", 7)
-                        .attr("fill", exp.color)
-                        .attr("opacity", 0.08);
+                    skillOrder.forEach((originalIdx, displayIdx) => {
+                        const data = skillsData[originalIdx];
+                        
+                        // Badge container group
+                        const badgeContainer = clippedGroup.append("g")
+                            .attr("class", "badge-container")
+                            .attr("data-skill", data.skill);
+                        
+                        // Badge background
+                        badgeContainer.append("rect")
+                            .attr("class", "badge-bg")
+                            .attr("x", currentX)
+                            .attr("y", skillY)
+                            .attr("width", data.width)
+                            .attr("height", 24)
+                            .attr("rx", 7)
+                            .attr("fill", data.color)
+                            .attr("opacity", 0.12);
 
-                    // Badge border
-                    group.append("rect")
-                        .attr("x", skillX)
-                        .attr("y", skillY)
-                        .attr("width", skillWidth)
-                        .attr("height", 24)
-                        .attr("rx", 7)
-                        .attr("fill", "none")
-                        .attr("stroke", exp.color)
-                        .attr("stroke-width", 1.2)
-                        .attr("opacity", 0.4);
+                        // Badge border
+                        badgeContainer.append("rect")
+                            .attr("class", "badge-border")
+                            .attr("x", currentX)
+                            .attr("y", skillY)
+                            .attr("width", data.width)
+                            .attr("height", 24)
+                            .attr("rx", 7)
+                            .attr("fill", "none")
+                            .attr("stroke", data.color)
+                            .attr("stroke-width", 1.5)
+                            .attr("opacity", 0.5);
 
-                    group.append("text")
-                        .attr("x", skillX + skillWidth / 2)
-                        .attr("y", skillY + 15.5)
-                        .attr("text-anchor", "middle")
-                        .attr("fill", exp.color)
-                        .attr("font-size", "10.5px")
-                        .attr("font-weight", "800")
-                        .attr("letter-spacing", "0.3px")
-                        .text(skill);
-
-                    skillX += skillWidth + 10;
-                });
+                        badgeContainer.append("text")
+                            .attr("class", "badge-text")
+                            .attr("x", currentX + data.width / 2)
+                            .attr("y", skillY + 15.5)
+                            .attr("text-anchor", "middle")
+                            .attr("fill", data.color)
+                            .attr("font-size", "10.5px")
+                            .attr("font-weight", "800")
+                            .attr("letter-spacing", "0.3px")
+                            .text(data.skill);
+                        
+                        // Fade in animation
+                        badgeContainer.style("opacity", 0)
+                            .transition()
+                            .duration(300)
+                            .style("opacity", 1);
+                        
+                        currentX += data.width + 10;
+                    });
+                }
+                
+                // Initial render
+                renderBadges();
+                
+                // Random swap animation
+                function swapBadges() {
+                    // Pick two random positions in display order
+                    const pos1 = Math.floor(Math.random() * skillOrder.length);
+                    let pos2 = Math.floor(Math.random() * skillOrder.length);
+                    while (pos2 === pos1) {
+                        pos2 = Math.floor(Math.random() * skillOrder.length);
+                    }
+                    
+                    // Fade out
+                    clippedGroup.selectAll(".badge-container")
+                        .transition()
+                        .duration(300)
+                        .style("opacity", 0)
+                        .on("end", function() {
+                            // Swap in array
+                            [skillOrder[pos1], skillOrder[pos2]] = [skillOrder[pos2], skillOrder[pos1]];
+                            
+                            // Re-render with new order
+                            renderBadges();
+                        });
+                    
+                    // Schedule next swap
+                    setTimeout(swapBadges, 4000 + Math.random() * 3000);
+                }
+                
+                // Start swapping after initial delay
+                if (skillsData.length > 1) {
+                    setTimeout(() => swapBadges(), 4000 + i * 500);
+                }
 
                 // Connector line from box to timeline (simpler, cleaner)
                 const connectorStartX = isEven ? boxX + boxWidth : boxX;
@@ -883,21 +977,6 @@
                     .attr("r", 3)
                     .attr("fill", exp.color)
                     .attr("opacity", 0.5);
-                
-                // Technology-based color palette
-                const techColors = {
-                    'Laravel': '#FF2D20',
-                    'React': '#61DAFB',
-                    'MySQL': '#4479A1',
-                    'AWS': '#FF9900',
-                    'PHP': '#777BB4',
-                    'Vue.js': '#42B883',
-                    'REST API': '#009688',
-                    'CodeIgniter': '#EE4623',
-                    'jQuery': '#0769AD',
-                    'JavaScript': '#F7DF1E',
-                    'HTML/CSS': '#E34F26'
-                };
                 
                 // Get random color from skills
                 function getSkillColor() {
