@@ -74,6 +74,47 @@ const experiences = [
     }
 ];
 
+// Typography configuration object (DRY principle)
+const typography = {
+    yearLabel: { fontSize: "14px", fontWeight: "600", fill: "#475569" },
+    positionTitle: { fontSize: "15px", fontWeightActive: "800", fontWeightInactive: "800", fill: "#0f172a", letterSpacing: "-0.2px" },
+    company: { fontSize: "13px", fontWeight: "700" },
+    yearRange: { fontSize: "11px", fontWeight: "600", fill: "#94a3b8" },
+    duration: { fontSize: "10px", fontWeight: "500", fill: "#cbd5e1" },
+    description: { fontSize: "12px", fontWeight: "500", fill: "#64748b", letterSpacing: "0.2px" },
+    badge: { fontSize: "9.5px", fontWeight: "700", letterSpacing: "0.2px" },
+    activeBadge: { fontSize: "10px", fontWeight: "700", letterSpacing: "0.5px", fill: "#fff" },
+    avatar: { fontSize: "20px", fontWeight: "800", fill: "#fff" }
+};
+
+// Helper function to apply typography styles
+function applyTypography(selection, styleKey, overrides = {}) {
+    const style = { ...typography[styleKey], ...overrides };
+    if (style.fontSize) selection.attr("font-size", style.fontSize);
+    if (style.fontWeight) selection.attr("font-weight", style.fontWeight);
+    if (style.fill) selection.attr("fill", style.fill);
+    if (style.letterSpacing) selection.attr("letter-spacing", style.letterSpacing);
+    return selection;
+}
+
+// Helper function to create text elements with typography
+function createText(parent, x, y, content, styleKey, attrs = {}) {
+    return applyTypography(
+        parent.append("text")
+            .attr("x", x)
+            .attr("y", y)
+            .attr("text-anchor", attrs.textAnchor || "start")
+            .text(content),
+        styleKey,
+        attrs.overrides || {}
+    );
+}
+
+// Helper function to apply drop shadow filter
+function applyDropShadow(selection, blur = "0", spread = "2px 4px", color = "rgba(0,0,0,0.15)") {
+    return selection.style("filter", `drop-shadow(${blur ? blur + " " : ""}${spread} ${color})`);
+}
+
 // Create Interactive D3 Visualization
 function createVisualization() {
     const container = d3.select("#experience-visualization");
@@ -82,6 +123,7 @@ function createVisualization() {
     const cardHeight = 200; // Actual card height
     const margin = { top: 60, right: 60, bottom: 100, left: 60 }; // Increased top and bottom
     const height = experiences.length * itemHeight + margin.top + margin.bottom;
+
 
     const svg = container.append("svg")
         .attr("width", containerWidth)
@@ -127,14 +169,7 @@ function createVisualization() {
                 .attr("stroke-width", 2);
             
             // Year text
-            g.append("text")
-                .attr("x", yearX)
-                .attr("y", axisY + 25)
-                .attr("text-anchor", "middle")
-                .attr("fill", "#475569")
-                .attr("font-size", "14px")
-                .attr("font-weight", "600")
-                .text(d);
+            createText(g, yearX, axisY + 25, d, "yearLabel", { textAnchor: "middle" });
             
             // Comet animation - moving up and down on the year mark line
             function createComet() {
@@ -484,14 +519,9 @@ function createVisualization() {
             .attr("stop-color", d3.rgb(exp.color).darker(0.5));
 
         if (exp.avatar) {
-            group.append("text")
-                .attr("x", logoX)
-                .attr("y", logoY + 7)
-                .attr("text-anchor", "middle")
-                .attr("fill", "#fff")
-                .attr("font-size", "20px")
-                .attr("font-weight", "800")
-                .text(exp.avatar);
+            createText(group, logoX, logoY + 7, exp.avatar, "avatar", {
+                textAnchor: "middle"
+            });
         }
 
         // Active badge
@@ -505,70 +535,41 @@ function createVisualization() {
                 .attr("fill", "#10b981")
                 .style("filter", "drop-shadow(0 1px 4px rgba(16,185,129,0.3))");
 
-            group.append("text")
-                .attr("x", boxX + boxWidth - 37.5)
-                .attr("y", boxY + 26)
-                .attr("text-anchor", "middle")
-                .attr("fill", "#fff")
-                .attr("font-size", "10px")
-                .attr("font-weight", "700")
-                .attr("letter-spacing", "0.5px")
-                .text("ACTIVE");
+            createText(group, boxX + boxWidth - 37.5, boxY + 26, "ACTIVE", "activeBadge", {
+                textAnchor: "middle"
+            });
         }
 
         // Position title
         const textStartX = logoX + 40;
-        group.append("text")
-            .attr("x", textStartX)
-            .attr("y", boxY + 24)
-            .attr("fill", "#0f172a")
-            .attr("font-size", exp.current ? "15px" : "14px")
-            .attr("font-weight", "800")
-            .attr("letter-spacing", "-0.2px")
-            .text(exp.position);
+        createText(group, textStartX, boxY + 24, exp.position, "positionTitle", {
+            overrides: { fontSize: exp.current ? "15px" : "14px" }
+        });
 
         // Company name with year breakdown
-        group.append("text")
-            .attr("x", textStartX)
-            .attr("y", boxY + 42)
-            .attr("fill", exp.color)
-            .attr("font-size", "13px")
-            .attr("font-weight", "700")
-            .text(exp.company);
+        createText(group, textStartX, boxY + 42, exp.company, "company", { 
+            overrides: { fill: exp.color } 
+        });
 
         // Year breakdown - consistent right side for all cards
         const rightX = boxX + boxWidth - 12;
         
-        group.append("text")
-            .attr("x", rightX)
-            .attr("y", boxY + 42)
-            .attr("text-anchor", "end")
-            .attr("fill", "#94a3b8")
-            .attr("font-size", "11px")
-            .attr("font-weight", "600")
-            .text(`${exp.startYear} - ${exp.current ? 'Present' : exp.endYear}`);
+        createText(group, rightX, boxY + 42, `${exp.startYear} - ${exp.current ? 'Present' : exp.endYear}`, "yearRange", {
+            textAnchor: "end"
+        });
 
         // Duration on second line
-        group.append("text")
-            .attr("x", rightX)
-            .attr("y", boxY + 57)
-            .attr("text-anchor", "end")
-            .attr("fill", "#cbd5e1")
-            .attr("font-size", "10px")
-            .attr("font-weight", "500")
-            .text(`${exp.endYear - exp.startYear} yrs`);
+        createText(group, rightX, boxY + 57, `${exp.endYear - exp.startYear} yrs`, "duration", {
+            textAnchor: "end"
+        });
 
         // Description (wrapped text) - 1 line only
         const descLines = wrapText(exp.description, 45);
         if (descLines[0]) {
-            group.append("text")
-                .attr("x", boxX + 18)
-                .attr("y", boxY + 82)
-                .attr("fill", "#64748b")
-                .attr("font-size", "12px")
-                .attr("font-weight", "500")
-                .attr("letter-spacing", "0.2px")
-                .text(descLines[0].substring(0, 48) + (descLines[0].length > 48 ? '...' : ''));
+            createText(group, boxX + 18, boxY + 82, 
+                descLines[0].substring(0, 48) + (descLines[0].length > 48 ? '...' : ''), 
+                "description"
+            );
         }
 
         // Skills badges with tech colors and random swap animation
@@ -632,16 +633,16 @@ function createVisualization() {
                     .attr("stroke-width", 1.5)
                     .attr("opacity", 0.5);
 
-                badgeContainer.append("text")
-                    .attr("class", "badge-text")
-                    .attr("x", currentX + data.width / 2)
-                    .attr("y", currentY + 14)
-                    .attr("text-anchor", "middle")
-                    .attr("fill", data.color)
-                    .attr("font-size", "9.5px")
-                    .attr("font-weight", "700")
-                    .attr("letter-spacing", "0.2px")
-                    .text(data.skill);
+                applyTypography(
+                    badgeContainer.append("text")
+                        .attr("class", "badge-text")
+                        .attr("x", currentX + data.width / 2)
+                        .attr("y", currentY + 14)
+                        .attr("text-anchor", "middle")
+                        .text(data.skill),
+                    "badge",
+                    { fill: data.color }
+                );
                 
                 // Update position for next badge
                 currentX += data.width + 8;
