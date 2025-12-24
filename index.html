@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     
     <style>
         :root {
@@ -284,97 +286,467 @@
     <section id="experience" class="py-24">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16" data-aos="fade-up">
-                <h2 class="text-3xl md:text-5xl font-bold text-slate-800 mb-4">Work Experience</h2>
-                <p class="text-slate-600 max-w-2xl mx-auto">My professional journey through the software industry.</p>
+                <span class="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-[#8B7355] to-[#A0826D] text-white text-sm font-semibold mb-4">
+                    12+ Years of Excellence
+                </span>
+                <h2 class="text-5xl md:text-6xl font-bold mb-4">
+                    <span class="bg-gradient-to-r from-slate-800 via-[#8B7355] to-[#A0826D] bg-clip-text text-transparent">Work Experience</span>
+                </h2>
+                <p class="text-slate-600 max-w-2xl mx-auto text-lg">Building innovative solutions across diverse industries</p>
             </div>
             
-            <div class="relative max-w-4xl mx-auto">
-                <!-- Vertical Line -->
-                <div class="absolute left-0 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-[#8B7355] via-[#A0826D] to-transparent md:-translate-x-1/2"></div>
-
-                <!-- Job 1 -->
-                <div class="relative mb-12 md:mb-24 group" data-aos="fade-up">
-                    <div class="md:flex items-center justify-between w-full">
-                        <div class="md:w-5/12 mb-4 md:mb-0 md:text-right pr-8">
-                            <h3 class="text-2xl font-bold text-slate-800 group-hover:text-[#8B7355] transition">Senior Software Engineer</h3>
-                            <div class="flex items-center justify-end gap-2 mb-2">
-                                <span class="text-[#8B7355] font-semibold">Mir Info Systems Ltd</span>
-                                <img src="images/mirinfosys_logo.jpeg" alt="Mir Info Systems" class="h-6">
-                            </div>
-                            <p class="text-slate-600 text-sm leading-relaxed">Leading development on enterprise web platforms.</p>
-                        </div>
-                        <div class="absolute left-0 md:left-1/2 w-8 h-8 rounded-full bg-white border-4 border-[#8B7355] md:-translate-x-1/2 -translate-x-1/2 flex items-center justify-center z-10 shadow-[0_0_20px_rgba(139,115,85,0.5)]">
-                            <div class="w-2 h-2 bg-[#8B7355] rounded-full"></div>
-                        </div>
-                        <div class="md:w-5/12 pl-8 md:pl-8">
-                            <span class="inline-block px-4 py-1 rounded-full bg-[#8B7355]/10 text-[#8B7355] text-sm font-mono border border-[#8B7355]/20">Present</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Job 2 -->
-                <div class="relative mb-12 md:mb-24 group" data-aos="fade-up">
-                    <div class="md:flex items-center justify-between w-full flex-row-reverse">
-                        <div class="md:w-5/12 mb-4 md:mb-0 pl-8">
-                            <h3 class="text-2xl font-bold text-slate-800 group-hover:text-[#A0826D] transition">Software Engineer</h3>
-                            <p class="text-[#A0826D] font-medium mb-2">zooFamily</p>
-                            <p class="text-slate-600 text-sm leading-relaxed">Developed and maintained travel technology solutions.</p>
-                        </div>
-                        <div class="absolute left-0 md:left-1/2 w-6 h-6 rounded-full bg-white border-2 border-slate-400 md:-translate-x-1/2 -translate-x-1/2 z-10 group-hover:border-[#A0826D] transition"></div>
-                        <div class="md:w-5/12 pr-8 md:pr-8 md:text-right">
-                            <span class="inline-block px-4 py-1 rounded-full bg-slate-200 text-slate-700 text-sm font-mono border border-slate-300">Former</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Job 3 -->
-                <div class="relative mb-12 md:mb-24 group" data-aos="fade-up">
-                    <div class="md:flex items-center justify-between w-full">
-                        <div class="md:w-5/12 mb-4 md:mb-0 md:text-right pr-8">
-                            <h3 class="text-2xl font-bold text-slate-800 group-hover:text-[#8B7355] transition">Software Engineer</h3>
-                            <p class="text-[#8B7355] font-medium mb-2">Freelance IT Lab</p>
-                            <p class="text-slate-600 text-sm leading-relaxed">Contributed to various client projects and web applications.</p>
-                        </div>
-                        <div class="absolute left-0 md:left-1/2 w-6 h-6 rounded-full bg-white border-2 border-slate-400 md:-translate-x-1/2 -translate-x-1/2 z-10 group-hover:border-[#8B7355] transition"></div>
-                        <div class="md:w-5/12 pl-8 md:pl-8">
-                            <span class="inline-block px-4 py-1 rounded-full bg-slate-200 text-slate-700 text-sm font-mono border border-slate-300">Former</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Job 4 -->
-                <div class="relative mb-12 md:mb-24 group" data-aos="fade-up">
-                    <div class="md:flex items-center justify-between w-full flex-row-reverse">
-                        <div class="md:w-5/12 mb-4 md:mb-0 pl-8">
-                            <h3 class="text-2xl font-bold text-slate-800 group-hover:text-[#A0826D] transition">Full Stack Developer</h3>
-                            <p class="text-[#A0826D] font-medium mb-2">SovWare</p>
-                            <p class="text-slate-600 text-sm leading-relaxed">Full stack development for software products.</p>
-                        </div>
-                        <div class="absolute left-0 md:left-1/2 w-6 h-6 rounded-full bg-white border-2 border-slate-400 md:-translate-x-1/2 -translate-x-1/2 z-10 group-hover:border-[#A0826D] transition"></div>
-                        <div class="md:w-5/12 pr-8 md:pr-8 md:text-right">
-                            <span class="inline-block px-4 py-1 rounded-full bg-slate-200 text-slate-700 text-sm font-mono border border-slate-300">Former</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Job 5 -->
-                <div class="relative mb-12 md:mb-24 group" data-aos="fade-up">
-                    <div class="md:flex items-center justify-between w-full">
-                        <div class="md:w-5/12 mb-4 md:mb-0 md:text-right pr-8">
-                            <h3 class="text-2xl font-bold text-slate-800 group-hover:text-[#8B7355] transition">Junior Software Engineer</h3>
-                            <p class="text-[#8B7355] font-medium mb-2">Freelance IT Lab</p>
-                            <p class="text-slate-600 text-sm leading-relaxed">Started career with web development and programming.</p>
-                        </div>
-                        <div class="absolute left-0 md:left-1/2 w-6 h-6 rounded-full bg-white border-2 border-slate-400 md:-translate-x-1/2 -translate-x-1/2 z-10 group-hover:border-[#8B7355] transition"></div>
-                        <div class="md:w-5/12 pl-8 md:pl-8">
-                            <span class="inline-block px-4 py-1 rounded-full bg-slate-200 text-slate-700 text-sm font-mono border border-slate-300">Former</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            <!-- D3.js Interactive Timeline Visualization -->
+            <div id="experience-visualization" class="w-full"></div>
         </div>
     </section>
+    
+    <script>
+        // D3.js Interactive Experience Visualization
+        const experiences = [
+            {
+                id: 1,
+                company: "Mir Info Systems Ltd",
+                logo: "images/mirinfosys_logo.jpeg",
+                position: "Senior Software Engineer",
+                startYear: 2020,
+                endYear: 2025,
+                current: true,
+                description: "Leading development teams in building enterprise-grade web platforms. Architecting scalable microservices, mentoring junior developers, and driving technical innovation across the organization.",
+                skills: ["Laravel", "React", "MySQL", "AWS"],
+                color: "#8B7355"
+            },
+            {
+                id: 2,
+                company: "zooFamily",
+                avatar: "Z",
+                position: "Software Engineer",
+                startYear: 2018,
+                endYear: 2020,
+                current: false,
+                description: "Developed cutting-edge travel technology solutions. Integrated payment gateways, optimized booking systems, and enhanced user experience for millions of travelers worldwide.",
+                skills: ["PHP", "Vue.js", "REST API"],
+                color: "#A0826D"
+            },
+            {
+                id: 3,
+                company: "Freelance IT Lab",
+                avatar: "F",
+                position: "Software Engineer",
+                startYear: 2016,
+                endYear: 2018,
+                current: false,
+                description: "Delivered custom web solutions for diverse clients. Built e-commerce platforms, CMS systems, and business applications with modern frameworks and best practices.",
+                skills: ["Laravel", "CodeIgniter", "jQuery"],
+                color: "#8B7355"
+            },
+            {
+                id: 4,
+                company: "SovWare",
+                avatar: "S",
+                position: "Full Stack Developer",
+                startYear: 2014,
+                endYear: 2016,
+                current: false,
+                description: "Built responsive web interfaces and robust backend systems. Collaborated with cross-functional teams to deliver high-quality software products on time.",
+                skills: ["PHP", "JavaScript", "MySQL"],
+                color: "#A0826D"
+            },
+            {
+                id: 5,
+                company: "Freelance IT Lab",
+                avatar: "F",
+                position: "Junior Software Engineer",
+                startYear: 2012,
+                endYear: 2014,
+                current: false,
+                description: "Began my software engineering journey. Learned core programming concepts, web development fundamentals, and built my first production applications.",
+                skills: ["HTML/CSS", "PHP", "JavaScript"],
+                color: "#6B5D4F"
+            }
+        ];
+
+        // Create Interactive D3 Visualization
+        function createVisualization() {
+            const container = d3.select("#experience-visualization");
+            const containerWidth = Math.min(1100, window.innerWidth - 60);
+            const itemHeight = 180;
+            const margin = { top: 40, right: 60, bottom: 60, left: 60 };
+            const height = experiences.length * itemHeight + margin.top + margin.bottom + 80;
+
+            const svg = container.append("svg")
+                .attr("width", containerWidth)
+                .attr("height", height)
+                .style("display", "block")
+                .style("margin", "0 auto");
+
+            // Create timeline scale
+            const xScale = d3.scaleLinear()
+                .domain([2012, 2025])
+                .range([margin.left, containerWidth - margin.right]);
+
+            // Draw main timeline axis
+            const axisY = height - 40;
+            svg.append("line")
+                .attr("x1", margin.left)
+                .attr("x2", containerWidth - margin.right)
+                .attr("y1", axisY)
+                .attr("y2", axisY)
+                .attr("stroke", "#8B7355")
+                .attr("stroke-width", 3)
+                .attr("stroke-linecap", "round")
+                .style("opacity", 0.4);
+
+            // Year markers
+            const years = d3.range(2012, 2026, 2);
+            svg.selectAll(".year-marker")
+                .data(years)
+                .enter()
+                .append("g")
+                .attr("class", "year-marker")
+                .each(function(d) {
+                    const g = d3.select(this);
+                    g.append("line")
+                        .attr("x1", xScale(d))
+                        .attr("x2", xScale(d))
+                        .attr("y1", axisY - 8)
+                        .attr("y2", axisY + 8)
+                        .attr("stroke", "#8B7355")
+                        .attr("stroke-width", 2);
+                    
+                    g.append("text")
+                        .attr("x", xScale(d))
+                        .attr("y", axisY + 25)
+                        .attr("text-anchor", "middle")
+                        .attr("fill", "#475569")
+                        .attr("font-size", "14px")
+                        .attr("font-weight", "600")
+                        .text(d);
+                });
+
+            // Create experience items
+            experiences.forEach((exp, i) => {
+                const yPos = i * itemHeight + margin.top;
+                const isEven = i % 2 === 0;
+                
+                const group = svg.append("g")
+                    .attr("class", "experience-item")
+                    .style("opacity", 0);
+
+                // Animated entrance
+                group.transition()
+                    .duration(800)
+                    .delay(i * 150)
+                    .style("opacity", 1);
+
+                // Calculate timeline bar position (at bottom)
+                const timelineY = height - margin.bottom - 20;
+                const barWidth = xScale(exp.endYear) - xScale(exp.startYear);
+                
+                // Bar background
+                group.append("rect")
+                    .attr("x", xScale(exp.startYear))
+                    .attr("y", timelineY)
+                    .attr("width", 0)
+                    .attr("height", 10)
+                    .attr("rx", 5)
+                    .attr("fill", exp.color)
+                    .attr("opacity", 0.2)
+                    .transition()
+                    .duration(1000)
+                    .delay(i * 150 + 200)
+                    .attr("width", barWidth);
+
+                // Bar foreground (animated fill)
+                group.append("rect")
+                    .attr("x", xScale(exp.startYear))
+                    .attr("y", timelineY)
+                    .attr("width", 0)
+                    .attr("height", 10)
+                    .attr("rx", 5)
+                    .attr("fill", `url(#gradient-${i})`)
+                    .style("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.15))")
+                    .transition()
+                    .duration(1200)
+                    .delay(i * 150 + 400)
+                    .attr("width", barWidth);
+
+                // Gradient definition
+                const gradient = svg.append("defs")
+                    .append("linearGradient")
+                    .attr("id", `gradient-${i}`)
+                    .attr("x1", "0%")
+                    .attr("x2", "100%");
+
+                gradient.append("stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", exp.color);
+
+                gradient.append("stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", d3.rgb(exp.color).brighter(0.5));
+
+                // Current indicator (green dot)
+                if (exp.current) {
+                    const pulse = group.append("circle")
+                        .attr("cx", xScale(exp.endYear))
+                        .attr("cy", timelineY + 5)
+                        .attr("r", 0)
+                        .attr("fill", "#10b981");
+
+                    pulse.transition()
+                        .duration(500)
+                        .delay(i * 150 + 1200)
+                        .attr("r", 6);
+
+                    function animate() {
+                        pulse.transition()
+                            .duration(1200)
+                            .attr("r", 9)
+                            .attr("opacity", 0.3)
+                            .transition()
+                            .duration(1200)
+                            .attr("r", 6)
+                            .attr("opacity", 1)
+                            .on("end", animate);
+                    }
+                    setTimeout(() => animate(), i * 150 + 1700);
+                }
+
+                // Content box (compact size)
+                const boxWidth = Math.min(380, containerWidth * 0.4);
+                const boxHeight = 140;
+                const boxX = isEven ? margin.left + 20 : containerWidth - margin.right - boxWidth - 20;
+                const boxY = yPos;
+
+                // Box shadow for depth
+                group.append("rect")
+                    .attr("x", boxX + 3)
+                    .attr("y", boxY + 3)
+                    .attr("width", boxWidth)
+                    .attr("height", boxHeight)
+                    .attr("rx", 16)
+                    .attr("fill", "#000")
+                    .attr("opacity", 0.05);
+
+                // Box background
+                const boxBg = group.append("rect")
+                    .attr("x", boxX)
+                    .attr("y", boxY)
+                    .attr("width", boxWidth)
+                    .attr("height", boxHeight)
+                    .attr("rx", 16)
+                    .attr("fill", "#ffffff")
+                    .attr("stroke", exp.color)
+                    .attr("stroke-width", exp.current ? 2 : 1)
+                    .style("filter", "drop-shadow(0 4px 12px rgba(0,0,0,0.08))");
+
+                // Logo/Avatar circle
+                const logoX = boxX + 28;
+                const logoY = boxY + 28;
+                
+                // Outer glow
+                group.append("circle")
+                    .attr("cx", logoX)
+                    .attr("cy", logoY)
+                    .attr("r", 26)
+                    .attr("fill", exp.color)
+                    .attr("opacity", 0.1);
+
+                group.append("circle")
+                    .attr("cx", logoX)
+                    .attr("cy", logoY)
+                    .attr("r", 22)
+                    .attr("fill", `url(#logo-gradient-${i})`)
+                    .style("filter", "drop-shadow(0 2px 6px rgba(0,0,0,0.12))");
+
+                const logoGrad = svg.append("defs")
+                    .append("linearGradient")
+                    .attr("id", `logo-gradient-${i}`)
+                    .attr("x1", "0%")
+                    .attr("y1", "0%")
+                    .attr("x2", "100%")
+                    .attr("y2", "100%");
+
+                logoGrad.append("stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", exp.color);
+
+                logoGrad.append("stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", d3.rgb(exp.color).darker(0.5));
+
+                if (exp.avatar) {
+                    group.append("text")
+                        .attr("x", logoX)
+                        .attr("y", logoY + 7)
+                        .attr("text-anchor", "middle")
+                        .attr("fill", "#fff")
+                        .attr("font-size", "20px")
+                        .attr("font-weight", "800")
+                        .text(exp.avatar);
+                }
+
+                // Active badge
+                if (exp.current) {
+                    group.append("rect")
+                        .attr("x", boxX + boxWidth - 65)
+                        .attr("y", boxY + 12)
+                        .attr("width", 55)
+                        .attr("height", 22)
+                        .attr("rx", 11)
+                        .attr("fill", "#10b981")
+                        .style("filter", "drop-shadow(0 1px 4px rgba(16,185,129,0.3))");
+
+                    group.append("text")
+                        .attr("x", boxX + boxWidth - 37.5)
+                        .attr("y", boxY + 26)
+                        .attr("text-anchor", "middle")
+                        .attr("fill", "#fff")
+                        .attr("font-size", "10px")
+                        .attr("font-weight", "700")
+                        .attr("letter-spacing", "0.5px")
+                        .text("ACTIVE");
+                }
+
+                // Position title
+                const textStartX = logoX + 36;
+                group.append("text")
+                    .attr("x", textStartX)
+                    .attr("y", boxY + 20)
+                    .attr("fill", "#0f172a")
+                    .attr("font-size", "14px")
+                    .attr("font-weight", "800")
+                    .text(exp.position);
+
+                // Company name with year breakdown
+                group.append("text")
+                    .attr("x", textStartX)
+                    .attr("y", boxY + 38)
+                    .attr("fill", exp.color)
+                    .attr("font-size", "13px")
+                    .attr("font-weight", "700")
+                    .text(exp.company);
+
+                // Year breakdown
+                group.append("text")
+                    .attr("x", textStartX)
+                    .attr("y", boxY + 53)
+                    .attr("fill", "#64748b")
+                    .attr("font-size", "11px")
+                    .attr("font-weight", "600")
+                    .text(`${exp.startYear} - ${exp.current ? 'Present' : exp.endYear} (${exp.endYear - exp.startYear} years)`);
+
+                // Description (wrapped text) - 1 line only
+                const descLines = wrapText(exp.description, 45);
+                if (descLines[0]) {
+                    group.append("text")
+                        .attr("x", boxX + 16)
+                        .attr("y", boxY + 76)
+                        .attr("fill", "#64748b")
+                        .attr("font-size", "11.5px")
+                        .attr("font-weight", "500")
+                        .text(descLines[0].substring(0, 50) + (descLines[0].length > 50 ? '...' : ''));
+                }
+
+                // Skills badges
+                let skillX = boxX + 16;
+                const skillY = boxY + boxHeight - 28;
+                exp.skills.slice(0, 3).forEach((skill, si) => {
+                    const skillWidth = skill.length * 7 + 18;
+                    
+                    // Badge background
+                    group.append("rect")
+                        .attr("x", skillX)
+                        .attr("y", skillY)
+                        .attr("width", skillWidth)
+                        .attr("height", 22)
+                        .attr("rx", 6)
+                        .attr("fill", exp.color)
+                        .attr("opacity", 0.1);
+
+                    // Badge border
+                    group.append("rect")
+                        .attr("x", skillX)
+                        .attr("y", skillY)
+                        .attr("width", skillWidth)
+                        .attr("height", 22)
+                        .attr("rx", 6)
+                        .attr("fill", "none")
+                        .attr("stroke", exp.color)
+                        .attr("stroke-width", 1)
+                        .attr("opacity", 0.35);
+
+                    group.append("text")
+                        .attr("x", skillX + skillWidth / 2)
+                        .attr("y", skillY + 14)
+                        .attr("text-anchor", "middle")
+                        .attr("fill", exp.color)
+                        .attr("font-size", "10px")
+                        .attr("font-weight", "700")
+                        .text(skill);
+
+                    skillX += skillWidth + 8;
+                });
+
+                // Connector line from box to timeline (simpler, cleaner)
+                const connectorStartX = isEven ? boxX + boxWidth : boxX;
+                const connectorStartY = boxY + boxHeight / 2;
+                const connectorEndX = (xScale(exp.startYear) + xScale(exp.endYear)) / 2;
+                const connectorEndY = timelineY;
+                
+                group.append("path")
+                    .attr("d", `M ${connectorStartX} ${connectorStartY} 
+                                Q ${(connectorStartX + connectorEndX) / 2} ${(connectorStartY + connectorEndY) / 2}, 
+                                  ${connectorEndX} ${connectorEndY}`)
+                    .attr("fill", "none")
+                    .attr("stroke", exp.color)
+                    .attr("stroke-width", 1.5)
+                    .attr("stroke-dasharray", "4,4")
+                    .attr("opacity", 0.3);
+
+                // Connector endpoint circle
+                group.append("circle")
+                    .attr("cx", connectorEndX)
+                    .attr("cy", connectorEndY)
+                    .attr("r", 3)
+                    .attr("fill", exp.color)
+                    .attr("opacity", 0.5);
+            });
+        }
+
+        // Helper function to wrap text
+        function wrapText(text, maxLength) {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + word).length <= maxLength) {
+                    currentLine += (currentLine ? ' ' : '') + word;
+                } else {
+                    if (currentLine) lines.push(currentLine);
+                    currentLine = word;
+                }
+            });
+            if (currentLine) lines.push(currentLine);
+            return lines;
+        }
+
+        // Initialize visualization
+        window.addEventListener('load', () => {
+            createVisualization();
+        });
+
+        // Recreate on window resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                d3.select("#experience-visualization").html("");
+                createVisualization();
+            }, 250);
+        });
+    </script>
 
     <!-- Education Section -->
     <section id="education" class="py-24 bg-white/30">
