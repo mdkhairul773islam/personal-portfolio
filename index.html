@@ -396,32 +396,168 @@
                 .attr("stroke-linecap", "round")
                 .style("opacity", 0.4);
 
-            // Year markers
+            // Year markers with continuous vertical lines and comet animation
             const years = d3.range(2012, 2026, 2);
             svg.selectAll(".year-marker")
                 .data(years)
                 .enter()
                 .append("g")
                 .attr("class", "year-marker")
-                .each(function(d) {
+                .each(function(d, i) {
                     const g = d3.select(this);
+                    const yearX = xScale(d);
+                    
+                    // Tick mark at bottom only
                     g.append("line")
-                        .attr("x1", xScale(d))
-                        .attr("x2", xScale(d))
+                        .attr("x1", yearX)
+                        .attr("x2", yearX)
                         .attr("y1", axisY - 8)
                         .attr("y2", axisY + 8)
                         .attr("stroke", "#8B7355")
                         .attr("stroke-width", 2);
                     
+                    // Year text
                     g.append("text")
-                        .attr("x", xScale(d))
+                        .attr("x", yearX)
                         .attr("y", axisY + 25)
                         .attr("text-anchor", "middle")
                         .attr("fill", "#475569")
                         .attr("font-size", "14px")
                         .attr("font-weight", "600")
                         .text(d);
+                    
+                    // Comet animation - moving up and down on the year mark line
+                    function createComet() {
+                        const tickTop = axisY - 8;
+                        const tickBottom = axisY + 8;
+                        const tickHeight = tickBottom - tickTop;
+                        
+                        // Alternating direction
+                        const direction = Math.random() > 0.5 ? 'down' : 'up';
+                        const startY = direction === 'down' ? tickTop : tickBottom;
+                        const endY = direction === 'down' ? tickBottom : tickTop;
+                        
+                        // Main comet head (glowing circle)
+                        const comet = g.append("circle")
+                            .attr("cx", yearX)
+                            .attr("cy", startY)
+                            .attr("r", 3)
+                            .attr("fill", "#8B7355")
+                            .attr("opacity", 0);
+                        
+                        // Comet glow
+                        const glow = g.append("circle")
+                            .attr("cx", yearX)
+                            .attr("cy", startY)
+                            .attr("r", 6)
+                            .attr("fill", "#A0826D")
+                            .attr("opacity", 0);
+                        
+                        // Comet trail
+                        const trail = g.append("line")
+                            .attr("x1", yearX)
+                            .attr("x2", yearX)
+                            .attr("y1", startY)
+                            .attr("y2", startY)
+                            .attr("stroke", direction === 'down' ? "url(#comet-gradient-down)" : "url(#comet-gradient-up)")
+                            .attr("stroke-width", 2)
+                            .attr("stroke-linecap", "round")
+                            .attr("opacity", 0);
+                        
+                        // Animate comet moving
+                        comet.transition()
+                            .duration(100)
+                            .attr("opacity", 1)
+                            .transition()
+                            .duration(800)
+                            .ease(d3.easeLinear)
+                            .attr("cy", endY)
+                            .transition()
+                            .duration(100)
+                            .attr("opacity", 0)
+                            .remove();
+                        
+                        glow.transition()
+                            .duration(100)
+                            .attr("opacity", 0.5)
+                            .transition()
+                            .duration(800)
+                            .ease(d3.easeLinear)
+                            .attr("cy", endY)
+                            .transition()
+                            .duration(100)
+                            .attr("opacity", 0)
+                            .remove();
+                        
+                        trail.transition()
+                            .duration(100)
+                            .attr("opacity", 0.7)
+                            .transition()
+                            .duration(800)
+                            .ease(d3.easeLinear)
+                            .attrTween("y1", function() {
+                                return function(t) {
+                                    const currentY = startY + (tickHeight * t * (direction === 'down' ? 1 : -1));
+                                    return direction === 'down' 
+                                        ? Math.max(tickTop, currentY - 8)
+                                        : Math.min(tickBottom, currentY + 8);
+                                };
+                            })
+                            .attrTween("y2", function() {
+                                return function(t) {
+                                    return startY + (tickHeight * t * (direction === 'down' ? 1 : -1));
+                                };
+                            })
+                            .transition()
+                            .duration(100)
+                            .attr("opacity", 0)
+                            .remove();
+                        
+                        // Repeat comet animation with random interval
+                        setTimeout(createComet, 2000 + Math.random() * 2000);
+                    }
+                    
+                    // Start comet with staggered delay
+                    setTimeout(() => createComet(), 1000 + i * 400);
                 });
+            
+            // Create gradients for comet trail (down direction)
+            const cometGradientDown = svg.append("defs")
+                .append("linearGradient")
+                .attr("id", "comet-gradient-down")
+                .attr("x1", "0%")
+                .attr("y1", "0%")
+                .attr("x2", "0%")
+                .attr("y2", "100%");
+            
+            cometGradientDown.append("stop")
+                .attr("offset", "0%")
+                .attr("stop-color", "#8B7355")
+                .attr("stop-opacity", 0);
+            
+            cometGradientDown.append("stop")
+                .attr("offset", "100%")
+                .attr("stop-color", "#A0826D")
+                .attr("stop-opacity", 0.8);
+            
+            // Create gradients for comet trail (up direction)
+            const cometGradientUp = svg.append("defs")
+                .append("linearGradient")
+                .attr("id", "comet-gradient-up")
+                .attr("x1", "0%")
+                .attr("y1", "100%")
+                .attr("x2", "0%")
+                .attr("y2", "0%");
+            
+            cometGradientUp.append("stop")
+                .attr("offset", "0%")
+                .attr("stop-color", "#8B7355")
+                .attr("stop-opacity", 0);
+            
+            cometGradientUp.append("stop")
+                .attr("offset", "100%")
+                .attr("stop-color", "#A0826D")
+                .attr("stop-opacity", 0.8);
 
             // Create experience items
             experiences.forEach((exp, i) => {
@@ -729,7 +865,7 @@
                 const connectorEndX = (xScale(exp.startYear) + xScale(exp.endYear)) / 2;
                 const connectorEndY = timelineY;
                 
-                group.append("path")
+                const connectorPath = group.append("path")
                     .attr("d", `M ${connectorStartX} ${connectorStartY} 
                                 Q ${(connectorStartX + connectorEndX) / 2} ${(connectorStartY + connectorEndY) / 2}, 
                                   ${connectorEndX} ${connectorEndY}`)
@@ -737,7 +873,8 @@
                     .attr("stroke", exp.color)
                     .attr("stroke-width", 1.5)
                     .attr("stroke-dasharray", "4,4")
-                    .attr("opacity", 0.3);
+                    .attr("opacity", 0.3)
+                    .attr("id", `connector-${exp.id}`);
 
                 // Connector endpoint circle
                 group.append("circle")
@@ -746,6 +883,85 @@
                     .attr("r", 3)
                     .attr("fill", exp.color)
                     .attr("opacity", 0.5);
+                
+                // Comet animation along connector line
+                function createConnectorComet() {
+                    const pathLength = connectorPath.node().getTotalLength();
+                    const direction = Math.random() > 0.5 ? 'forward' : 'backward';
+                    
+                    // Comet head
+                    const connectorComet = group.append("circle")
+                        .attr("r", 3)
+                        .attr("fill", exp.color)
+                        .attr("opacity", 0);
+                    
+                    // Comet glow
+                    const connectorGlow = group.append("circle")
+                        .attr("r", 6)
+                        .attr("fill", exp.color)
+                        .attr("opacity", 0);
+                    
+                    // Set starting position
+                    const startPoint = direction === 'forward' 
+                        ? connectorPath.node().getPointAtLength(0)
+                        : connectorPath.node().getPointAtLength(pathLength);
+                    
+                    connectorComet.attr("cx", startPoint.x).attr("cy", startPoint.y);
+                    connectorGlow.attr("cx", startPoint.x).attr("cy", startPoint.y);
+                    
+                    // Animate comet along path
+                    connectorComet.transition()
+                        .duration(100)
+                        .attr("opacity", 0.8)
+                        .transition()
+                        .duration(1500)
+                        .ease(d3.easeLinear)
+                        .attrTween("cx", function() {
+                            return function(t) {
+                                const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
+                                return connectorPath.node().getPointAtLength(length).x;
+                            };
+                        })
+                        .attrTween("cy", function() {
+                            return function(t) {
+                                const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
+                                return connectorPath.node().getPointAtLength(length).y;
+                            };
+                        })
+                        .transition()
+                        .duration(100)
+                        .attr("opacity", 0)
+                        .remove();
+                    
+                    connectorGlow.transition()
+                        .duration(100)
+                        .attr("opacity", 0.4)
+                        .transition()
+                        .duration(1500)
+                        .ease(d3.easeLinear)
+                        .attrTween("cx", function() {
+                            return function(t) {
+                                const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
+                                return connectorPath.node().getPointAtLength(length).x;
+                            };
+                        })
+                        .attrTween("cy", function() {
+                            return function(t) {
+                                const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
+                                return connectorPath.node().getPointAtLength(length).y;
+                            };
+                        })
+                        .transition()
+                        .duration(100)
+                        .attr("opacity", 0)
+                        .remove();
+                    
+                    // Repeat animation
+                    setTimeout(createConnectorComet, 3000 + Math.random() * 3000);
+                }
+                
+                // Start connector comet with delay
+                setTimeout(() => createConnectorComet(), 2000 + i * 500);
             });
         }
 
