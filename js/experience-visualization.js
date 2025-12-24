@@ -87,6 +87,21 @@ const typography = {
     avatar: { fontSize: "20px", fontWeight: "800", fill: "#fff" }
 };
 
+// Mobile-optimized typography
+function getResponsiveTypography(styleKey, isMobile = false) {
+    const baseStyle = { ...typography[styleKey] };
+    
+    if (isMobile) {
+        // Reduce font sizes on mobile
+        if (baseStyle.fontSize) {
+            const size = parseInt(baseStyle.fontSize);
+            baseStyle.fontSize = (size * 0.85) + "px"; // Scale down to 85%
+        }
+    }
+    
+    return baseStyle;
+}
+
 // Helper function to apply typography styles
 function applyTypography(selection, styleKey, overrides = {}) {
     const style = { ...typography[styleKey], ...overrides };
@@ -121,19 +136,29 @@ function createVisualization() {
     
     // Responsive dimensions calculation
     const containerElement = document.getElementById("experience-visualization");
-    let containerWidth = window.innerWidth < 768 ? window.innerWidth - 30 : Math.min(1100, window.innerWidth - 60);
+    const viewportWidth = Math.min(window.innerWidth, window.screen.width);
     
     // Adjust spacing based on screen size
-    const isMobile = window.innerWidth < 640;
-    const isTablet = window.innerWidth < 1024;
+    const isMobile = viewportWidth < 640;
+    const isTablet = viewportWidth < 1024;
     
-    const itemHeight = isMobile ? 200 : 240; // Height between cards (vertical spacing)
+    // Calculate container width with proper mobile padding
+    let containerWidth;
+    if (isMobile) {
+        containerWidth = viewportWidth - 24; // More aggressive mobile padding
+    } else if (isTablet) {
+        containerWidth = viewportWidth - 40;
+    } else {
+        containerWidth = Math.min(1100, viewportWidth - 60);
+    }
+    
+    const itemHeight = isMobile ? 220 : isTablet ? 230 : 240; // Height between cards (vertical spacing)
     const cardHeight = 200; // Actual card height
     const margin = { 
-        top: isMobile ? 40 : 60, 
-        right: isMobile ? 30 : 60, 
-        bottom: isMobile ? 80 : 100, 
-        left: isMobile ? 30 : 60 
+        top: isMobile ? 30 : 40, 
+        right: isMobile ? 15 : isTablet ? 30 : 60, 
+        bottom: isMobile ? 70 : isTablet ? 80 : 100, 
+        left: isMobile ? 15 : isTablet ? 30 : 60 
     };
     const height = experiences.length * itemHeight + margin.top + margin.bottom;
 
@@ -454,11 +479,26 @@ function createVisualization() {
             setTimeout(() => animate(), i * 150 + 1700);
         }
 
-        // Content box (compact size)
-        const boxWidth = Math.min(380, containerWidth * 0.4);
+        // Content box (responsive size)
+        let boxWidth;
+        if (isMobile) {
+            boxWidth = containerWidth - margin.left - margin.right - 10; // Full width on mobile
+        } else if (isTablet) {
+            boxWidth = Math.min(350, containerWidth * 0.5);
+        } else {
+            boxWidth = Math.min(380, containerWidth * 0.4);
+        }
+        
         const boxHeight = cardHeight; // Use the card height variable
-        const boxX = isEven ? margin.left + 20 : containerWidth - margin.right - boxWidth - 20;
-        const boxY = yPos;
+        let boxX, boxY;
+        
+        if (isMobile) {
+            // Center card on mobile
+            boxX = margin.left + 5;
+        } else {
+            boxX = isEven ? margin.left + 20 : containerWidth - margin.right - boxWidth - 20;
+        }
+        boxY = yPos;
 
         // Box shadow for depth
         group.append("rect")
@@ -577,11 +617,12 @@ function createVisualization() {
             textAnchor: "end"
         });
 
-        // Description (wrapped text) - 1 line only
-        const descLines = wrapText(exp.description, 45);
+        // Description (wrapped text) - responsive length
+        const maxDescChars = isMobile ? 35 : 48;
+        const descLines = wrapText(exp.description, isMobile ? 30 : 45);
         if (descLines[0]) {
             createText(group, boxX + 18, boxY + 82, 
-                descLines[0].substring(0, 48) + (descLines[0].length > 48 ? '...' : ''), 
+                descLines[0].substring(0, maxDescChars) + (descLines[0].length > maxDescChars ? '...' : ''), 
                 "description"
             );
         }
