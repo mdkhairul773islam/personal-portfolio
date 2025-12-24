@@ -884,38 +884,117 @@
                     .attr("fill", exp.color)
                     .attr("opacity", 0.5);
                 
+                // Technology-based color palette
+                const techColors = {
+                    'Laravel': '#FF2D20',
+                    'React': '#61DAFB',
+                    'MySQL': '#4479A1',
+                    'AWS': '#FF9900',
+                    'PHP': '#777BB4',
+                    'Vue.js': '#42B883',
+                    'REST API': '#009688',
+                    'CodeIgniter': '#EE4623',
+                    'jQuery': '#0769AD',
+                    'JavaScript': '#F7DF1E',
+                    'HTML/CSS': '#E34F26'
+                };
+                
+                // Get random color from skills
+                function getSkillColor() {
+                    const skill = exp.skills[Math.floor(Math.random() * exp.skills.length)];
+                    return techColors[skill] || exp.color;
+                }
+                
+                // Ripple effect on card border when comet hits
+                function createBorderRipple(cometColor) {
+                    const rippleCount = 4;
+                    
+                    for (let j = 0; j < rippleCount; j++) {
+                        // Main ripple
+                        group.append("rect")
+                            .attr("x", boxX)
+                            .attr("y", boxY)
+                            .attr("width", boxWidth)
+                            .attr("height", boxHeight)
+                            .attr("rx", 18)
+                            .attr("fill", "none")
+                            .attr("stroke", cometColor)
+                            .attr("stroke-width", 3)
+                            .attr("opacity", 0.9)
+                            .style("filter", `drop-shadow(0 0 4px ${cometColor})`)
+                            .transition()
+                            .delay(j * 100)
+                            .duration(1000)
+                            .ease(d3.easeCubicOut)
+                            .attr("stroke-width", 0.3)
+                            .attr("opacity", 0)
+                            .attr("x", boxX - 15 - j * 3)
+                            .attr("y", boxY - 15 - j * 3)
+                            .attr("width", boxWidth + 30 + j * 6)
+                            .attr("height", boxHeight + 30 + j * 6)
+                            .attr("rx", 18 + j * 2)
+                            .remove();
+                    }
+                    
+                    // Flash effect on impact
+                    group.append("rect")
+                        .attr("x", boxX)
+                        .attr("y", boxY)
+                        .attr("width", boxWidth)
+                        .attr("height", boxHeight)
+                        .attr("rx", 18)
+                        .attr("fill", cometColor)
+                        .attr("opacity", 0.15)
+                        .transition()
+                        .duration(200)
+                        .ease(d3.easeQuadOut)
+                        .attr("opacity", 0)
+                        .remove();
+                }
+                
                 // Comet animation along connector line
                 function createConnectorComet() {
                     const pathLength = connectorPath.node().getTotalLength();
                     const direction = Math.random() > 0.5 ? 'forward' : 'backward';
+                    const cometColor = getSkillColor();
                     
-                    // Comet head
-                    const connectorComet = group.append("circle")
-                        .attr("r", 3)
-                        .attr("fill", exp.color)
-                        .attr("opacity", 0);
+                    // Comet trail
+                    const cometTrail = group.append("circle")
+                        .attr("r", 10)
+                        .attr("fill", cometColor)
+                        .attr("opacity", 0)
+                        .style("filter", `blur(4px)`);
                     
-                    // Comet glow
+                    // Comet glow (medium)
                     const connectorGlow = group.append("circle")
                         .attr("r", 6)
-                        .attr("fill", exp.color)
-                        .attr("opacity", 0);
+                        .attr("fill", cometColor)
+                        .attr("opacity", 0)
+                        .style("filter", `blur(2px)`);
+                    
+                    // Comet head (bright core)
+                    const connectorComet = group.append("circle")
+                        .attr("r", 3)
+                        .attr("fill", cometColor)
+                        .attr("opacity", 0)
+                        .style("filter", `drop-shadow(0 0 3px ${cometColor})`);
                     
                     // Set starting position
                     const startPoint = direction === 'forward' 
                         ? connectorPath.node().getPointAtLength(0)
                         : connectorPath.node().getPointAtLength(pathLength);
                     
-                    connectorComet.attr("cx", startPoint.x).attr("cy", startPoint.y);
+                    cometTrail.attr("cx", startPoint.x).attr("cy", startPoint.y);
                     connectorGlow.attr("cx", startPoint.x).attr("cy", startPoint.y);
+                    connectorComet.attr("cx", startPoint.x).attr("cy", startPoint.y);
                     
-                    // Animate comet along path
-                    connectorComet.transition()
-                        .duration(100)
-                        .attr("opacity", 0.8)
+                    // Animate trail (slowest, largest)
+                    cometTrail.transition()
+                        .duration(150)
+                        .attr("opacity", 0.15)
                         .transition()
-                        .duration(1500)
-                        .ease(d3.easeLinear)
+                        .duration(1800)
+                        .ease(d3.easeCubicInOut)
                         .attrTween("cx", function() {
                             return function(t) {
                                 const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
@@ -929,16 +1008,17 @@
                             };
                         })
                         .transition()
-                        .duration(100)
+                        .duration(150)
                         .attr("opacity", 0)
                         .remove();
                     
+                    // Animate glow (medium speed)
                     connectorGlow.transition()
-                        .duration(100)
+                        .duration(120)
                         .attr("opacity", 0.4)
                         .transition()
-                        .duration(1500)
-                        .ease(d3.easeLinear)
+                        .duration(1600)
+                        .ease(d3.easeCubicInOut)
                         .attrTween("cx", function() {
                             return function(t) {
                                 const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
@@ -952,12 +1032,42 @@
                             };
                         })
                         .transition()
+                        .duration(120)
+                        .attr("opacity", 0)
+                        .remove();
+                    
+                    // Animate comet head (fastest, brightest)
+                    connectorComet.transition()
+                        .duration(100)
+                        .attr("opacity", 1)
+                        .transition()
+                        .duration(1400)
+                        .ease(d3.easeCubicInOut)
+                        .attrTween("cx", function() {
+                            return function(t) {
+                                const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
+                                return connectorPath.node().getPointAtLength(length).x;
+                            };
+                        })
+                        .attrTween("cy", function() {
+                            return function(t) {
+                                const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
+                                return connectorPath.node().getPointAtLength(length).y;
+                            };
+                        })
+                        .on("end", function() {
+                            // Trigger ripple when comet hits card
+                            if (direction === 'forward') {
+                                createBorderRipple(cometColor);
+                            }
+                        })
+                        .transition()
                         .duration(100)
                         .attr("opacity", 0)
                         .remove();
                     
-                    // Repeat animation
-                    setTimeout(createConnectorComet, 3000 + Math.random() * 3000);
+                    // Repeat animation with smoother timing
+                    setTimeout(createConnectorComet, 2500 + Math.random() * 2500);
                 }
                 
                 // Start connector comet with delay
