@@ -966,30 +966,110 @@
                     setTimeout(() => swapBadges(), 4000 + i * 500);
                 }
 
-                // Connector line from box to timeline (simpler, cleaner)
+                // Connector line from box to timeline - lotus petal spiral design
                 const connectorStartX = isEven ? boxX + boxWidth : boxX;
                 const connectorStartY = boxY + boxHeight / 2;
                 const connectorEndX = (xScale(exp.startYear) + xScale(exp.endYear)) / 2;
                 const connectorEndY = timelineY;
                 
-                const connectorPath = group.append("path")
-                    .attr("d", `M ${connectorStartX} ${connectorStartY} 
-                                Q ${(connectorStartX + connectorEndX) / 2} ${(connectorStartY + connectorEndY) / 2}, 
-                                  ${connectorEndX} ${connectorEndY}`)
+                // Create spiral/petal curves
+                const midX = (connectorStartX + connectorEndX) / 2;
+                const midY = (connectorStartY + connectorEndY) / 2;
+                const distance = Math.sqrt(Math.pow(connectorEndX - connectorStartX, 2) + Math.pow(connectorEndY - connectorStartY, 2));
+                const spiralStrength = distance * 0.3;
+                const direction = isEven ? 1 : -1;
+                
+                // Create multi-layer spiral paths for petal effect
+                const spiralLayers = 3;
+                
+                for (let layer = 0; layer < spiralLayers; layer++) {
+                    const layerOffset = (layer - 1) * 15;
+                    const layerOpacity = 0.15 - (layer * 0.03);
+                    const layerWidth = 3 + (layer * 1.5);
+                    
+                    // Spiral control points
+                    const cp1X = connectorStartX + spiralStrength * direction * (1 + layer * 0.3);
+                    const cp1Y = connectorStartY + layerOffset;
+                    const cp2X = midX + spiralStrength * direction * 1.5 * (layer % 2 === 0 ? 1 : -1);
+                    const cp2Y = midY - spiralStrength * 0.5 + layerOffset;
+                    const cp3X = connectorEndX - spiralStrength * direction * (layer * 0.2);
+                    const cp3Y = connectorEndY + layerOffset;
+                    
+                    group.append("path")
+                        .attr("d", `M ${connectorStartX} ${connectorStartY} 
+                                   C ${cp1X} ${cp1Y},
+                                     ${cp2X} ${cp2Y},
+                                     ${cp3X} ${cp3Y}`)
+                        .attr("fill", "none")
+                        .attr("stroke", exp.color)
+                        .attr("stroke-width", layerWidth)
+                        .attr("opacity", layerOpacity)
+                        .attr("stroke-linecap", "round")
+                        .attr("stroke-linejoin", "round");
+                }
+                
+                // Main central spiral line
+                const mainSpiral = group.append("path")
+                    .attr("d", `M ${connectorStartX} ${connectorStartY}
+                               C ${connectorStartX + spiralStrength * direction * 1.2} ${connectorStartY - 10},
+                                 ${midX + spiralStrength * direction * 2} ${midY - spiralStrength * 0.7},
+                                 ${connectorEndX - spiralStrength * direction * 0.3} ${connectorEndY}`)
                     .attr("fill", "none")
                     .attr("stroke", exp.color)
-                    .attr("stroke-width", 1.5)
-                    .attr("stroke-dasharray", "4,4")
-                    .attr("opacity", 0.3)
+                    .attr("stroke-width", 2)
+                    .attr("opacity", 0.7)
+                    .attr("stroke-linecap", "round")
+                    .attr("stroke-linejoin", "round")
                     .attr("id", `connector-${exp.id}`);
+                
+                // Rotating spiral particles
+                function createSpiralParticle(delay) {
+                    const particle = group.append("circle")
+                        .attr("r", 2)
+                        .attr("fill", exp.color)
+                        .attr("opacity", 0.9);
+                    
+                    particle.transition()
+                        .delay(delay)
+                        .duration(2800)
+                        .ease(d3.easeQuadInOut)
+                        .attrTween("cx", function() {
+                            return function(t) {
+                                const point = mainSpiral.node().getPointAtLength(t * mainSpiral.node().getTotalLength());
+                                return point.x;
+                            };
+                        })
+                        .attrTween("cy", function() {
+                            return function(t) {
+                                const point = mainSpiral.node().getPointAtLength(t * mainSpiral.node().getTotalLength());
+                                return point.y;
+                            };
+                        })
+                        .attrTween("r", function() {
+                            return function(t) {
+                                // Breathing effect
+                                return 2 + Math.sin(t * Math.PI * 4) * 0.5;
+                            };
+                        })
+                        .on("end", function() {
+                            d3.select(this).remove();
+                            if (Math.random() > 0.2) createSpiralParticle(i * 350 + 600);
+                        });
+                }
+                
+                // Start particles
+                for (let p = 0; p < 3; p++) {
+                    setTimeout(() => createSpiralParticle(i * 350), (i * 350 + 900) + p * 900);
+                }
 
-                // Connector endpoint circle
+                // Connector endpoint - lotus center
                 group.append("circle")
                     .attr("cx", connectorEndX)
                     .attr("cy", connectorEndY)
-                    .attr("r", 3)
+                    .attr("r", 4)
                     .attr("fill", exp.color)
-                    .attr("opacity", 0.5);
+                    .attr("opacity", 0.9)
+                    .style("filter", `drop-shadow(0 0 3px ${exp.color})`);
                 
                 // Get random color from skills
                 function getSkillColor() {
