@@ -381,9 +381,10 @@
         function createVisualization() {
             const container = d3.select("#experience-visualization");
             const containerWidth = Math.min(1100, window.innerWidth - 60);
-            const itemHeight = 240; // Height between cards (vertical spacing)
+            const itemHeight = 300; // Vertical spacing between cards
             const cardHeight = 200; // Actual card height
-            const margin = { top: 60, right: 60, bottom: 100, left: 60 }; // Increased top and bottom
+            const cardWidth = 340; // Card width for vertical layout
+            const margin = { top: 60, right: 60, bottom: 60, left: 60 };
             const height = experiences.length * itemHeight + margin.top + margin.bottom;
 
             const svg = container.append("svg")
@@ -392,24 +393,24 @@
                 .style("display", "block")
                 .style("margin", "0 auto");
 
-            // Create timeline scale
-            const xScale = d3.scaleLinear()
-                .domain([2012, 2025])
-                .range([margin.left, containerWidth - margin.right]);
+            // Create vertical timeline scale (years on Y-axis)
+            const yScale = d3.scaleLinear()
+                .domain([2011, 2025])
+                .range([margin.top, height - margin.bottom]);
 
-            // Draw main timeline axis
-            const axisY = height - margin.bottom + 20;
+            // Draw main vertical timeline axis (center of screen)
+            const axisX = containerWidth / 2;
             svg.append("line")
-                .attr("x1", margin.left)
-                .attr("x2", containerWidth - margin.right)
-                .attr("y1", axisY)
-                .attr("y2", axisY)
+                .attr("x1", axisX)
+                .attr("x2", axisX)
+                .attr("y1", margin.top)
+                .attr("y2", height - margin.bottom)
                 .attr("stroke", "#8B7355")
                 .attr("stroke-width", 3)
                 .attr("stroke-linecap", "round")
                 .style("opacity", 0.4);
 
-            // Year markers with continuous vertical lines and comet animation
+            // Year markers - vertical layout
             const years = d3.range(2012, 2026, 2);
             svg.selectAll(".year-marker")
                 .data(years)
@@ -418,61 +419,61 @@
                 .attr("class", "year-marker")
                 .each(function(d, i) {
                     const g = d3.select(this);
-                    const yearX = xScale(d);
+                    const yearY = yScale(d);
                     
-                    // Tick mark at bottom only
+                    // Tick mark (left and right of center line)
                     g.append("line")
-                        .attr("x1", yearX)
-                        .attr("x2", yearX)
-                        .attr("y1", axisY - 8)
-                        .attr("y2", axisY + 8)
+                        .attr("x1", axisX - 8)
+                        .attr("x2", axisX + 8)
+                        .attr("y1", yearY)
+                        .attr("y2", yearY)
                         .attr("stroke", "#8B7355")
                         .attr("stroke-width", 2);
                     
-                    // Year text
+                    // Year text (above the line)
                     g.append("text")
-                        .attr("x", yearX)
-                        .attr("y", axisY + 25)
+                        .attr("x", axisX)
+                        .attr("y", yearY - 15)
                         .attr("text-anchor", "middle")
                         .attr("fill", "#475569")
                         .attr("font-size", "14px")
                         .attr("font-weight", "600")
                         .text(d);
                     
-                    // Comet animation - moving up and down on the year mark line
+                    // Comet animation - moving left and right on the year mark line
                     function createComet() {
-                        const tickTop = axisY - 8;
-                        const tickBottom = axisY + 8;
-                        const tickHeight = tickBottom - tickTop;
+                        const tickLeft = axisX - 8;
+                        const tickRight = axisX + 8;
+                        const tickWidth = tickRight - tickLeft;
                         
                         // Alternating direction
-                        const direction = Math.random() > 0.5 ? 'down' : 'up';
-                        const startY = direction === 'down' ? tickTop : tickBottom;
-                        const endY = direction === 'down' ? tickBottom : tickTop;
+                        const direction = Math.random() > 0.5 ? 'right' : 'left';
+                        const startX = direction === 'right' ? tickLeft : tickRight;
+                        const endX = direction === 'right' ? tickRight : tickLeft;
                         
-                        // Main comet head (glowing circle)
+                        // Main comet head
                         const comet = g.append("circle")
-                            .attr("cx", yearX)
-                            .attr("cy", startY)
+                            .attr("cx", startX)
+                            .attr("cy", yearY)
                             .attr("r", 3)
                             .attr("fill", "#8B7355")
                             .attr("opacity", 0);
                         
                         // Comet glow
                         const glow = g.append("circle")
-                            .attr("cx", yearX)
-                            .attr("cy", startY)
+                            .attr("cx", startX)
+                            .attr("cy", yearY)
                             .attr("r", 6)
                             .attr("fill", "#A0826D")
                             .attr("opacity", 0);
                         
                         // Comet trail
                         const trail = g.append("line")
-                            .attr("x1", yearX)
-                            .attr("x2", yearX)
-                            .attr("y1", startY)
-                            .attr("y2", startY)
-                            .attr("stroke", direction === 'down' ? "url(#comet-gradient-down)" : "url(#comet-gradient-up)")
+                            .attr("x1", startX)
+                            .attr("x2", startX)
+                            .attr("y1", yearY)
+                            .attr("y2", yearY)
+                            .attr("stroke", direction === 'right' ? "url(#comet-gradient-right)" : "url(#comet-gradient-left)")
                             .attr("stroke-width", 2)
                             .attr("stroke-linecap", "round")
                             .attr("opacity", 0);
@@ -484,7 +485,7 @@
                             .transition()
                             .duration(800)
                             .ease(d3.easeLinear)
-                            .attr("cy", endY)
+                            .attr("cx", endX)
                             .transition()
                             .duration(100)
                             .attr("opacity", 0)
@@ -496,7 +497,7 @@
                             .transition()
                             .duration(800)
                             .ease(d3.easeLinear)
-                            .attr("cy", endY)
+                            .attr("cx", endX)
                             .transition()
                             .duration(100)
                             .attr("opacity", 0)
@@ -508,17 +509,17 @@
                             .transition()
                             .duration(800)
                             .ease(d3.easeLinear)
-                            .attrTween("y1", function() {
+                            .attrTween("x1", function() {
                                 return function(t) {
-                                    const currentY = startY + (tickHeight * t * (direction === 'down' ? 1 : -1));
-                                    return direction === 'down' 
-                                        ? Math.max(tickTop, currentY - 8)
-                                        : Math.min(tickBottom, currentY + 8);
+                                    const currentX = startX + (tickWidth * t * (direction === 'right' ? 1 : -1));
+                                    return direction === 'right' 
+                                        ? Math.max(tickLeft, currentX - 8)
+                                        : Math.min(tickRight, currentX + 8);
                                 };
                             })
-                            .attrTween("y2", function() {
+                            .attrTween("x2", function() {
                                 return function(t) {
-                                    return startY + (tickHeight * t * (direction === 'down' ? 1 : -1));
+                                    return startX + (tickWidth * t * (direction === 'right' ? 1 : -1));
                                 };
                             })
                             .transition()
@@ -526,7 +527,7 @@
                             .attr("opacity", 0)
                             .remove();
                         
-                        // Repeat comet animation with random interval
+                        // Repeat comet animation
                         setTimeout(createComet, 2000 + Math.random() * 2000);
                     }
                     
@@ -534,40 +535,40 @@
                     setTimeout(() => createComet(), 1000 + i * 400);
                 });
             
-            // Create gradients for comet trail (down direction)
-            const cometGradientDown = svg.append("defs")
+            // Create gradients for comet trail (right direction)
+            const cometGradientRight = svg.append("defs")
                 .append("linearGradient")
-                .attr("id", "comet-gradient-down")
+                .attr("id", "comet-gradient-right")
                 .attr("x1", "0%")
                 .attr("y1", "0%")
-                .attr("x2", "0%")
-                .attr("y2", "100%");
+                .attr("x2", "100%")
+                .attr("y2", "0%");
             
-            cometGradientDown.append("stop")
+            cometGradientRight.append("stop")
                 .attr("offset", "0%")
                 .attr("stop-color", "#8B7355")
                 .attr("stop-opacity", 0);
             
-            cometGradientDown.append("stop")
+            cometGradientRight.append("stop")
                 .attr("offset", "100%")
                 .attr("stop-color", "#A0826D")
                 .attr("stop-opacity", 0.8);
             
-            // Create gradients for comet trail (up direction)
-            const cometGradientUp = svg.append("defs")
+            // Create gradients for comet trail (left direction)
+            const cometGradientLeft = svg.append("defs")
                 .append("linearGradient")
-                .attr("id", "comet-gradient-up")
-                .attr("x1", "0%")
-                .attr("y1", "100%")
+                .attr("id", "comet-gradient-left")
+                .attr("x1", "100%")
+                .attr("y1", "0%")
                 .attr("x2", "0%")
                 .attr("y2", "0%");
             
-            cometGradientUp.append("stop")
+            cometGradientLeft.append("stop")
                 .attr("offset", "0%")
                 .attr("stop-color", "#8B7355")
                 .attr("stop-opacity", 0);
             
-            cometGradientUp.append("stop")
+            cometGradientLeft.append("stop")
                 .attr("offset", "100%")
                 .attr("stop-color", "#A0826D")
                 .attr("stop-opacity", 0.8);
@@ -589,8 +590,8 @@
 
             // Create experience items
             experiences.forEach((exp, i) => {
-                const yPos = i * itemHeight + margin.top;
-                const isEven = i % 2 === 0;
+                const cardY = i * itemHeight + margin.top;
+                const isLeft = i % 2 === 0;
                 
                 const group = svg.append("g")
                     .attr("class", "experience-item")
@@ -608,47 +609,46 @@
                                 .transition()
                                 .duration(3000 + i * 200)
                                 .ease(d3.easeSinInOut)
-                                .attr("transform", `translate(0, -5)`)
+                                .attr("transform", `translate(-5, 0)`)
                                 .transition()
                                 .duration(3000 + i * 200)
                                 .ease(d3.easeSinInOut)
-                                .attr("transform", `translate(0, 5)`)
+                                .attr("transform", `translate(5, 0)`)
                                 .on("end", floatAnimation);
                         }
                         floatAnimation.call(this);
                     });
 
-                // Calculate timeline bar position (at bottom)
-                const timelineY = height - margin.bottom - 20;
-                const barWidth = xScale(exp.endYear) - xScale(exp.startYear);
+                // Calculate timeline bar position (vertical bar on center line)
+                const barHeight = yScale(exp.endYear) - yScale(exp.startYear);
                 
                 // Bar background
                 group.append("rect")
-                    .attr("x", xScale(exp.startYear))
-                    .attr("y", timelineY)
+                    .attr("x", axisX - 3)
+                    .attr("y", yScale(exp.endYear))
                     .attr("width", 0)
-                    .attr("height", 10)
+                    .attr("height", barHeight)
                     .attr("rx", 5)
                     .attr("fill", exp.color)
                     .attr("opacity", 0.2)
                     .transition()
                     .duration(1000)
                     .delay(i * 150 + 200)
-                    .attr("width", barWidth);
+                    .attr("width", 6);
 
                 // Bar foreground (animated fill) with pulse effect
                 const barForeground = group.append("rect")
-                    .attr("x", xScale(exp.startYear))
-                    .attr("y", timelineY)
+                    .attr("x", axisX - 3)
+                    .attr("y", yScale(exp.endYear))
                     .attr("width", 0)
-                    .attr("height", 10)
+                    .attr("height", barHeight)
                     .attr("rx", 5)
                     .attr("fill", `url(#gradient-${i})`)
                     .style("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.15))")
                     .transition()
                     .duration(1200)
                     .delay(i * 150 + 400)
-                    .attr("width", barWidth)
+                    .attr("width", 6)
                     .on("end", function() {
                         // Infinite glow pulse animation
                         function glowPulse() {
@@ -671,7 +671,9 @@
                     .append("linearGradient")
                     .attr("id", `gradient-${i}`)
                     .attr("x1", "0%")
-                    .attr("x2", "100%");
+                    .attr("y1", "0%")
+                    .attr("x2", "0%")
+                    .attr("y2", "100%");
 
                 gradient.append("stop")
                     .attr("offset", "0%")
@@ -681,11 +683,11 @@
                     .attr("offset", "100%")
                     .attr("stop-color", d3.rgb(exp.color).brighter(0.5));
 
-                // Current indicator (green dot)
+                // Current indicator (green dot on timeline)
                 if (exp.current) {
                     const pulse = group.append("circle")
-                        .attr("cx", xScale(exp.endYear))
-                        .attr("cy", timelineY + 5)
+                        .attr("cx", axisX)
+                        .attr("cy", yScale(exp.endYear))
                         .attr("r", 0)
                         .attr("fill", "#10b981");
 
@@ -708,11 +710,11 @@
                     setTimeout(() => animate(), i * 150 + 1700);
                 }
 
-                // Content box (compact size)
-                const boxWidth = Math.min(380, containerWidth * 0.4);
-                const boxHeight = cardHeight; // Use the card height variable
-                const boxX = isEven ? margin.left + 20 : containerWidth - margin.right - boxWidth - 20;
-                const boxY = yPos;
+                // Content box positioning - left or right of center line
+                const boxWidth = cardWidth;
+                const boxHeight = cardHeight;
+                const boxX = isLeft ? axisX - boxWidth - 30 : axisX + 30;
+                const boxY = cardY;
 
                 // Box shadow for depth
                 group.append("rect")
@@ -993,17 +995,17 @@
                 }
 
                 // Connector line from box to timeline - lotus petal spiral design
-                const connectorStartX = isEven ? boxX + boxWidth : boxX;
+                const connectorStartX = boxX + (isLeft ? boxWidth : 0);
                 const connectorStartY = boxY + boxHeight / 2;
-                const connectorEndX = (xScale(exp.startYear) + xScale(exp.endYear)) / 2;
-                const connectorEndY = timelineY;
+                const connectorEndX = axisX;
+                const connectorEndY = yScale((exp.startYear + exp.endYear) / 2);
                 
                 // Create spiral/petal curves
                 const midX = (connectorStartX + connectorEndX) / 2;
                 const midY = (connectorStartY + connectorEndY) / 2;
                 const distance = Math.sqrt(Math.pow(connectorEndX - connectorStartX, 2) + Math.pow(connectorEndY - connectorStartY, 2));
                 const spiralStrength = distance * 0.3;
-                const direction = isEven ? 1 : -1;
+                const direction = isLeft ? 1 : -1;
                 
                 // Create multi-layer spiral paths for petal effect
                 const spiralLayers = 3;
@@ -1014,12 +1016,12 @@
                     const layerWidth = 3 + (layer * 1.5);
                     
                     // Spiral control points
-                    const cp1X = connectorStartX + spiralStrength * direction * (1 + layer * 0.3);
-                    const cp1Y = connectorStartY + layerOffset;
-                    const cp2X = midX + spiralStrength * direction * 1.5 * (layer % 2 === 0 ? 1 : -1);
-                    const cp2Y = midY - spiralStrength * 0.5 + layerOffset;
-                    const cp3X = connectorEndX - spiralStrength * direction * (layer * 0.2);
-                    const cp3Y = connectorEndY + layerOffset;
+                    const cp1X = connectorStartX + layerOffset;
+                    const cp1Y = connectorStartY + spiralStrength * direction * (1 + layer * 0.3);
+                    const cp2X = midX - spiralStrength * 0.5 + layerOffset;
+                    const cp2Y = midY + spiralStrength * direction * 1.5 * (layer % 2 === 0 ? 1 : -1);
+                    const cp3X = connectorEndX + layerOffset;
+                    const cp3Y = connectorEndY - spiralStrength * direction * (layer * 0.2);
                     
                     group.append("path")
                         .attr("d", `M ${connectorStartX} ${connectorStartY} 
@@ -1037,9 +1039,9 @@
                 // Main central spiral line
                 const mainSpiral = group.append("path")
                     .attr("d", `M ${connectorStartX} ${connectorStartY}
-                               C ${connectorStartX + spiralStrength * direction * 1.2} ${connectorStartY - 10},
-                                 ${midX + spiralStrength * direction * 2} ${midY - spiralStrength * 0.7},
-                                 ${connectorEndX - spiralStrength * direction * 0.3} ${connectorEndY}`)
+                               C ${connectorStartX - 10} ${connectorStartY + spiralStrength * direction * 1.2},
+                                 ${midX - spiralStrength * 0.7} ${midY + spiralStrength * direction * 2},
+                                 ${connectorEndX} ${connectorEndY - spiralStrength * direction * 0.3}`)
                     .attr("fill", "none")
                     .attr("stroke", exp.color)
                     .attr("stroke-width", 2)
