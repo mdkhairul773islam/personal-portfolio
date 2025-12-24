@@ -283,7 +283,7 @@
     </section>
 
     <!-- Experience Section -->
-    <section id="experience" class="py-16 min-h-[96vh] flex items-center">
+    <section id="experience" class="py-16 flex items-center">
         <div class="container mx-auto px-6 w-full">
             <div class="text-center mb-12" data-aos="fade-up">
                 <span class="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-[#8B7355] to-[#A0826D] text-white text-sm font-semibold mb-4">
@@ -312,7 +312,7 @@
                 endYear: 2025,
                 current: true,
                 description: "Leading development teams in building enterprise-grade web platforms. Architecting scalable microservices, mentoring junior developers, and driving technical innovation across the organization.",
-                skills: ["Laravel", "React", "MySQL", "AWS"],
+                skills: ["Laravel", "React", "MySQL", "AWS", "PHP", "Vue.js", "REST API", "JavaScript", "HTML/CSS", "CodeIgniter"],
                 color: "#8B7355"
             },
             {
@@ -324,7 +324,7 @@
                 endYear: 2020,
                 current: false,
                 description: "Developed cutting-edge travel technology solutions. Integrated payment gateways, optimized booking systems, and enhanced user experience for millions of travelers worldwide.",
-                skills: ["PHP", "Vue.js", "REST API"],
+                skills: ["Vue.js", "REST API", "JavaScript", "HTML/CSS", "MySQL", "Laravel", "AWS", "CodeIgniter", "jQuery", "PHP"],
                 color: "#A0826D"
             },
             {
@@ -336,7 +336,7 @@
                 endYear: 2018,
                 current: false,
                 description: "Delivered custom web solutions for diverse clients. Built e-commerce platforms, CMS systems, and business applications with modern frameworks and best practices.",
-                skills: ["Laravel", "CodeIgniter", "jQuery"],
+                skills: ["CodeIgniter", "jQuery", "PHP", "MySQL", "REST API", "AWS", "Laravel", "React", "JavaScript", "HTML/CSS", "Vue.js"],
                 color: "#8B7355"
             },
             {
@@ -348,7 +348,7 @@
                 endYear: 2016,
                 current: false,
                 description: "Built responsive web interfaces and robust backend systems. Collaborated with cross-functional teams to deliver high-quality software products on time.",
-                skills: ["PHP", "JavaScript", "MySQL"],
+                skills: ["React", "JavaScript", "Laravel", "MySQL", "AWS", "Vue.js", "REST API", "PHP", "jQuery"],
                 color: "#A0826D"
             },
             {
@@ -360,8 +360,20 @@
                 endYear: 2014,
                 current: false,
                 description: "Began my software engineering journey. Learned core programming concepts, web development fundamentals, and built my first production applications.",
-                skills: ["HTML/CSS", "PHP", "JavaScript"],
+                skills: ["HTML/CSS", "PHP", "JavaScript", "jQuery", "MySQL", "REST API", "Laravel", "React", "Vue.js"],
                 color: "#6B5D4F"
+            },
+            {
+                id: 6,
+                company: "Tech Startup Innovations",
+                avatar: "T",
+                position: "Junior Full Stack Developer",
+                startYear: 2011,
+                endYear: 2012,
+                current: false,
+                description: "Started my tech career at an early-stage startup. Worked on building web applications and learned industry best practices from experienced mentors.",
+                skills: ["PHP", "jQuery", "JavaScript", "MySQL", "HTML/CSS", "REST API", "Laravel"],
+                color: "#7B68EE"
             }
         ];
 
@@ -369,9 +381,10 @@
         function createVisualization() {
             const container = d3.select("#experience-visualization");
             const containerWidth = Math.min(1100, window.innerWidth - 60);
-            const itemHeight = 140; // Reduced from 180
-            const margin = { top: 20, right: 60, bottom: 50, left: 60 }; // Reduced margins
-            const height = experiences.length * itemHeight + margin.top + margin.bottom + 60; // Reduced spacing
+            const itemHeight = 240; // Height between cards (vertical spacing)
+            const cardHeight = 200; // Actual card height
+            const margin = { top: 60, right: 60, bottom: 100, left: 60 }; // Increased top and bottom
+            const height = experiences.length * itemHeight + margin.top + margin.bottom;
 
             const svg = container.append("svg")
                 .attr("width", containerWidth)
@@ -385,7 +398,7 @@
                 .range([margin.left, containerWidth - margin.right]);
 
             // Draw main timeline axis
-            const axisY = height - 40;
+            const axisY = height - margin.bottom + 20;
             svg.append("line")
                 .attr("x1", margin.left)
                 .attr("x2", containerWidth - margin.right)
@@ -697,7 +710,7 @@
 
                 // Content box (compact size)
                 const boxWidth = Math.min(380, containerWidth * 0.4);
-                const boxHeight = 140;
+                const boxHeight = cardHeight; // Use the card height variable
                 const boxX = isEven ? margin.left + 20 : containerWidth - margin.right - boxWidth - 20;
                 const boxY = yPos;
 
@@ -862,7 +875,7 @@
                 }
 
                 // Skills badges with tech colors and random swap animation
-                const skillsData = exp.skills.slice(0, 3).map((skill, si) => ({
+                const skillsData = exp.skills.map((skill, si) => ({
                     skill,
                     color: techColors[skill] || exp.color,
                     width: skill.length * 7.5 + 20,
@@ -871,16 +884,27 @@
                 
                 // Track order of skills
                 let skillOrder = skillsData.map((_, idx) => idx);
-                const skillY = boxY + boxHeight - 30;
-                const skillSlotWidth = skillsData.map(s => s.width + 10);
+                const skillStartY = boxY + boxHeight - 45; // Start from bottom with more space
+                const skillRowEnd = boxX + boxWidth - 12;
                 
                 // Function to render badges based on current order
                 function renderBadges() {
                     clippedGroup.selectAll(".badge-container").remove();
-                    let currentX = boxX + 18;
+                    let currentX = boxX + 12;
+                    let currentY = skillStartY;
+                    let badgesInRow = 0;
                     
                     skillOrder.forEach((originalIdx, displayIdx) => {
                         const data = skillsData[originalIdx];
+                        
+                        // Show all skills (no limit, will wrap naturally)
+                        
+                        // Check if we need to wrap to next line
+                        if (currentX + data.width + 8 > skillRowEnd && badgesInRow > 0) {
+                            currentX = boxX + 12;
+                            currentY -= 28; // Move up for next row
+                            badgesInRow = 0;
+                        }
                         
                         // Badge container group
                         const badgeContainer = clippedGroup.append("g")
@@ -891,10 +915,10 @@
                         badgeContainer.append("rect")
                             .attr("class", "badge-bg")
                             .attr("x", currentX)
-                            .attr("y", skillY)
+                            .attr("y", currentY)
                             .attr("width", data.width)
-                            .attr("height", 24)
-                            .attr("rx", 7)
+                            .attr("height", 22)
+                            .attr("rx", 6)
                             .attr("fill", data.color)
                             .attr("opacity", 0.12);
 
@@ -902,10 +926,10 @@
                         badgeContainer.append("rect")
                             .attr("class", "badge-border")
                             .attr("x", currentX)
-                            .attr("y", skillY)
+                            .attr("y", currentY)
                             .attr("width", data.width)
-                            .attr("height", 24)
-                            .attr("rx", 7)
+                            .attr("height", 22)
+                            .attr("rx", 6)
                             .attr("fill", "none")
                             .attr("stroke", data.color)
                             .attr("stroke-width", 1.5)
@@ -914,21 +938,23 @@
                         badgeContainer.append("text")
                             .attr("class", "badge-text")
                             .attr("x", currentX + data.width / 2)
-                            .attr("y", skillY + 15.5)
+                            .attr("y", currentY + 14)
                             .attr("text-anchor", "middle")
                             .attr("fill", data.color)
-                            .attr("font-size", "10.5px")
-                            .attr("font-weight", "800")
-                            .attr("letter-spacing", "0.3px")
+                            .attr("font-size", "9.5px")
+                            .attr("font-weight", "700")
+                            .attr("letter-spacing", "0.2px")
                             .text(data.skill);
+                        
+                        // Update position for next badge
+                        currentX += data.width + 8;
+                        badgesInRow++;
                         
                         // Fade in animation
                         badgeContainer.style("opacity", 0)
                             .transition()
                             .duration(300)
                             .style("opacity", 1);
-                        
-                        currentX += data.width + 10;
                     });
                 }
                 
@@ -1079,10 +1105,11 @@
                 
                 // Ripple effect on card border when comet hits
                 function createBorderRipple(cometColor) {
-                    const rippleCount = 4;
+                    // Outer expanding ripples
+                    const rippleCount = 6;
                     
                     for (let j = 0; j < rippleCount; j++) {
-                        // Main ripple
+                        // Main ripple - expanding outward
                         group.append("rect")
                             .attr("x", boxX)
                             .attr("y", boxY)
@@ -1092,23 +1119,41 @@
                             .attr("fill", "none")
                             .attr("stroke", cometColor)
                             .attr("stroke-width", 3)
-                            .attr("opacity", 0.9)
-                            .style("filter", `drop-shadow(0 0 4px ${cometColor})`)
+                            .attr("opacity", 0.8)
+                            .style("filter", `drop-shadow(0 0 10px ${cometColor})`)
                             .transition()
-                            .delay(j * 100)
-                            .duration(1000)
+                            .delay(j * 60)
+                            .duration(1500)
                             .ease(d3.easeCubicOut)
                             .attr("stroke-width", 0.3)
                             .attr("opacity", 0)
-                            .attr("x", boxX - 15 - j * 3)
-                            .attr("y", boxY - 15 - j * 3)
-                            .attr("width", boxWidth + 30 + j * 6)
-                            .attr("height", boxHeight + 30 + j * 6)
-                            .attr("rx", 18 + j * 2)
+                            .attr("x", boxX - 30 - j * 5)
+                            .attr("y", boxY - 30 - j * 5)
+                            .attr("width", boxWidth + 60 + j * 10)
+                            .attr("height", boxHeight + 60 + j * 10)
+                            .attr("rx", 22 + j * 4)
                             .remove();
                     }
                     
-                    // Flash effect on impact
+                    // Inner bright border flash
+                    group.append("rect")
+                        .attr("x", boxX + 1)
+                        .attr("y", boxY + 1)
+                        .attr("width", boxWidth - 2)
+                        .attr("height", boxHeight - 2)
+                        .attr("rx", 16)
+                        .attr("fill", "none")
+                        .attr("stroke", cometColor)
+                        .attr("stroke-width", 3)
+                        .attr("opacity", 1)
+                        .style("filter", `drop-shadow(0 0 15px ${cometColor})`)
+                        .transition()
+                        .duration(300)
+                        .ease(d3.easeQuadOut)
+                        .attr("opacity", 0)
+                        .remove();
+                    
+                    // Flash effect on impact - bright initial glow
                     group.append("rect")
                         .attr("x", boxX)
                         .attr("y", boxY)
@@ -1116,7 +1161,8 @@
                         .attr("height", boxHeight)
                         .attr("rx", 18)
                         .attr("fill", cometColor)
-                        .attr("opacity", 0.15)
+                        .attr("opacity", 0.3)
+                        .style("filter", `drop-shadow(0 0 15px ${cometColor})`)
                         .transition()
                         .duration(200)
                         .ease(d3.easeQuadOut)
@@ -1124,59 +1170,73 @@
                         .remove();
                 }
                 
-                // Comet animation along connector line
+                // Comet animation along connector line - color changes dynamically
                 function createConnectorComet() {
-                    const pathLength = connectorPath.node().getTotalLength();
+                    const pathLength = mainSpiral.node().getTotalLength();
                     const direction = Math.random() > 0.5 ? 'forward' : 'backward';
-                    const cometColor = getSkillColor();
                     
-                    // Comet trail
+                    // Get random color from this card's skills
+                    function getCurrentSkillColor() {
+                        const skill = exp.skills[Math.floor(Math.random() * exp.skills.length)];
+                        return techColors[skill] || exp.color;
+                    }
+                    
+                    let currentCometColor = getCurrentSkillColor();
+                    
+                    // Comet trail (large blurred glow)
                     const cometTrail = group.append("circle")
-                        .attr("r", 10)
-                        .attr("fill", cometColor)
+                        .attr("r", 14)
+                        .attr("fill", currentCometColor)
                         .attr("opacity", 0)
-                        .style("filter", `blur(4px)`);
+                        .style("filter", `blur(5px)`);
                     
-                    // Comet glow (medium)
+                    // Comet glow (medium bright)
                     const connectorGlow = group.append("circle")
-                        .attr("r", 6)
-                        .attr("fill", cometColor)
+                        .attr("r", 8)
+                        .attr("fill", currentCometColor)
                         .attr("opacity", 0)
                         .style("filter", `blur(2px)`);
                     
-                    // Comet head (bright core)
+                    // Comet head (bright visible core)
                     const connectorComet = group.append("circle")
-                        .attr("r", 3)
-                        .attr("fill", cometColor)
+                        .attr("r", 5)
+                        .attr("fill", currentCometColor)
                         .attr("opacity", 0)
-                        .style("filter", `drop-shadow(0 0 3px ${cometColor})`);
+                        .style("filter", `drop-shadow(0 0 6px ${currentCometColor})`);
                     
                     // Set starting position
                     const startPoint = direction === 'forward' 
-                        ? connectorPath.node().getPointAtLength(0)
-                        : connectorPath.node().getPointAtLength(pathLength);
+                        ? mainSpiral.node().getPointAtLength(0)
+                        : mainSpiral.node().getPointAtLength(pathLength);
                     
                     cometTrail.attr("cx", startPoint.x).attr("cy", startPoint.y);
                     connectorGlow.attr("cx", startPoint.x).attr("cy", startPoint.y);
                     connectorComet.attr("cx", startPoint.x).attr("cy", startPoint.y);
                     
-                    // Animate trail (slowest, largest)
+                    // Animate trail (slowest, largest) - with color change every 25%
                     cometTrail.transition()
                         .duration(150)
-                        .attr("opacity", 0.15)
+                        .attr("opacity", 0.3)
                         .transition()
                         .duration(1800)
                         .ease(d3.easeCubicInOut)
                         .attrTween("cx", function() {
                             return function(t) {
+                                // Change color every 25% of journey
+                                if (Math.floor(t * 4) > Math.floor((t - 0.01) * 4)) {
+                                    currentCometColor = getCurrentSkillColor();
+                                    cometTrail.attr("fill", currentCometColor);
+                                    connectorGlow.attr("fill", currentCometColor);
+                                    connectorComet.attr("fill", currentCometColor).style("filter", `drop-shadow(0 0 6px ${currentCometColor})`);
+                                }
                                 const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
-                                return connectorPath.node().getPointAtLength(length).x;
+                                return mainSpiral.node().getPointAtLength(length).x;
                             };
                         })
                         .attrTween("cy", function() {
                             return function(t) {
                                 const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
-                                return connectorPath.node().getPointAtLength(length).y;
+                                return mainSpiral.node().getPointAtLength(length).y;
                             };
                         })
                         .transition()
@@ -1187,20 +1247,20 @@
                     // Animate glow (medium speed)
                     connectorGlow.transition()
                         .duration(120)
-                        .attr("opacity", 0.4)
+                        .attr("opacity", 0.6)
                         .transition()
                         .duration(1600)
                         .ease(d3.easeCubicInOut)
                         .attrTween("cx", function() {
                             return function(t) {
                                 const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
-                                return connectorPath.node().getPointAtLength(length).x;
+                                return mainSpiral.node().getPointAtLength(length).x;
                             };
                         })
                         .attrTween("cy", function() {
                             return function(t) {
                                 const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
-                                return connectorPath.node().getPointAtLength(length).y;
+                                return mainSpiral.node().getPointAtLength(length).y;
                             };
                         })
                         .transition()
@@ -1218,28 +1278,25 @@
                         .attrTween("cx", function() {
                             return function(t) {
                                 const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
-                                return connectorPath.node().getPointAtLength(length).x;
+                                return mainSpiral.node().getPointAtLength(length).x;
                             };
                         })
                         .attrTween("cy", function() {
                             return function(t) {
                                 const length = direction === 'forward' ? pathLength * t : pathLength * (1 - t);
-                                return connectorPath.node().getPointAtLength(length).y;
+                                return mainSpiral.node().getPointAtLength(length).y;
                             };
                         })
                         .on("end", function() {
-                            // Trigger ripple when comet hits card
-                            if (direction === 'forward') {
-                                createBorderRipple(cometColor);
-                            }
+                            // Trigger ripple when comet hits card (both directions)
+                            createBorderRipple(currentCometColor);
+                            // Schedule next comet immediately for infinity loop
+                            createConnectorComet();
                         })
                         .transition()
                         .duration(100)
                         .attr("opacity", 0)
                         .remove();
-                    
-                    // Repeat animation with smoother timing
-                    setTimeout(createConnectorComet, 2500 + Math.random() * 2500);
                 }
                 
                 // Start connector comet with delay
