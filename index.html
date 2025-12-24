@@ -432,11 +432,27 @@
                     .attr("class", "experience-item")
                     .style("opacity", 0);
 
-                // Animated entrance
+                // Animated entrance with infinite subtle animation
                 group.transition()
                     .duration(800)
                     .delay(i * 150)
-                    .style("opacity", 1);
+                    .style("opacity", 1)
+                    .on("end", function() {
+                        // Add infinite subtle floating animation
+                        function floatAnimation() {
+                            d3.select(this)
+                                .transition()
+                                .duration(3000 + i * 200)
+                                .ease(d3.easeSinInOut)
+                                .attr("transform", `translate(0, -5)`)
+                                .transition()
+                                .duration(3000 + i * 200)
+                                .ease(d3.easeSinInOut)
+                                .attr("transform", `translate(0, 5)`)
+                                .on("end", floatAnimation);
+                        }
+                        floatAnimation.call(this);
+                    });
 
                 // Calculate timeline bar position (at bottom)
                 const timelineY = height - margin.bottom - 20;
@@ -456,8 +472,8 @@
                     .delay(i * 150 + 200)
                     .attr("width", barWidth);
 
-                // Bar foreground (animated fill)
-                group.append("rect")
+                // Bar foreground (animated fill) with pulse effect
+                const barForeground = group.append("rect")
                     .attr("x", xScale(exp.startYear))
                     .attr("y", timelineY)
                     .attr("width", 0)
@@ -468,7 +484,23 @@
                     .transition()
                     .duration(1200)
                     .delay(i * 150 + 400)
-                    .attr("width", barWidth);
+                    .attr("width", barWidth)
+                    .on("end", function() {
+                        // Infinite glow pulse animation
+                        function glowPulse() {
+                            d3.select(this)
+                                .transition()
+                                .duration(2000)
+                                .ease(d3.easeSinInOut)
+                                .style("filter", "drop-shadow(0 2px 8px rgba(0,0,0,0.25))")
+                                .transition()
+                                .duration(2000)
+                                .ease(d3.easeSinInOut)
+                                .style("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.15))")
+                                .on("end", glowPulse);
+                        }
+                        glowPulse.call(this);
+                    });
 
                 // Gradient definition
                 const gradient = svg.append("defs")
@@ -520,13 +552,13 @@
 
                 // Box shadow for depth
                 group.append("rect")
-                    .attr("x", boxX + 3)
-                    .attr("y", boxY + 3)
+                    .attr("x", boxX + 2)
+                    .attr("y", boxY + 2)
                     .attr("width", boxWidth)
                     .attr("height", boxHeight)
-                    .attr("rx", 16)
+                    .attr("rx", 18)
                     .attr("fill", "#000")
-                    .attr("opacity", 0.05);
+                    .attr("opacity", 0.04);
 
                 // Box background
                 const boxBg = group.append("rect")
@@ -534,15 +566,15 @@
                     .attr("y", boxY)
                     .attr("width", boxWidth)
                     .attr("height", boxHeight)
-                    .attr("rx", 16)
-                    .attr("fill", "#ffffff")
+                    .attr("rx", 18)
+                    .attr("fill", exp.current ? "#ffffff" : "#fafafa")
                     .attr("stroke", exp.color)
-                    .attr("stroke-width", exp.current ? 2 : 1)
-                    .style("filter", "drop-shadow(0 4px 12px rgba(0,0,0,0.08))");
+                    .attr("stroke-width", exp.current ? 2.5 : 1.5)
+                    .style("filter", exp.current ? "drop-shadow(0 8px 24px rgba(139,115,85,0.12))" : "drop-shadow(0 4px 12px rgba(0,0,0,0.06))");
 
                 // Logo/Avatar circle
-                const logoX = boxX + 28;
-                const logoY = boxY + 28;
+                const logoX = boxX + 30;
+                const logoY = boxY + 32;
                 
                 // Outer glow
                 group.append("circle")
@@ -609,19 +641,20 @@
                 }
 
                 // Position title
-                const textStartX = logoX + 36;
+                const textStartX = logoX + 40;
                 group.append("text")
                     .attr("x", textStartX)
-                    .attr("y", boxY + 20)
+                    .attr("y", boxY + 24)
                     .attr("fill", "#0f172a")
-                    .attr("font-size", "14px")
+                    .attr("font-size", exp.current ? "15px" : "14px")
                     .attr("font-weight", "800")
+                    .attr("letter-spacing", "-0.2px")
                     .text(exp.position);
 
                 // Company name with year breakdown
                 group.append("text")
                     .attr("x", textStartX)
-                    .attr("y", boxY + 38)
+                    .attr("y", boxY + 42)
                     .attr("fill", exp.color)
                     .attr("font-size", "13px")
                     .attr("font-weight", "700")
@@ -630,9 +663,9 @@
                 // Year breakdown
                 group.append("text")
                     .attr("x", textStartX)
-                    .attr("y", boxY + 53)
+                    .attr("y", boxY + 58)
                     .attr("fill", "#64748b")
-                    .attr("font-size", "11px")
+                    .attr("font-size", "11.5px")
                     .attr("font-weight", "600")
                     .text(`${exp.startYear} - ${exp.current ? 'Present' : exp.endYear} (${exp.endYear - exp.startYear} years)`);
 
@@ -640,52 +673,54 @@
                 const descLines = wrapText(exp.description, 45);
                 if (descLines[0]) {
                     group.append("text")
-                        .attr("x", boxX + 16)
-                        .attr("y", boxY + 76)
+                        .attr("x", boxX + 18)
+                        .attr("y", boxY + 82)
                         .attr("fill", "#64748b")
-                        .attr("font-size", "11.5px")
+                        .attr("font-size", "12px")
                         .attr("font-weight", "500")
-                        .text(descLines[0].substring(0, 50) + (descLines[0].length > 50 ? '...' : ''));
+                        .attr("letter-spacing", "0.2px")
+                        .text(descLines[0].substring(0, 48) + (descLines[0].length > 48 ? '...' : ''));
                 }
 
                 // Skills badges
-                let skillX = boxX + 16;
-                const skillY = boxY + boxHeight - 28;
+                let skillX = boxX + 18;
+                const skillY = boxY + boxHeight - 30;
                 exp.skills.slice(0, 3).forEach((skill, si) => {
-                    const skillWidth = skill.length * 7 + 18;
+                    const skillWidth = skill.length * 7.5 + 20;
                     
                     // Badge background
                     group.append("rect")
                         .attr("x", skillX)
                         .attr("y", skillY)
                         .attr("width", skillWidth)
-                        .attr("height", 22)
-                        .attr("rx", 6)
+                        .attr("height", 24)
+                        .attr("rx", 7)
                         .attr("fill", exp.color)
-                        .attr("opacity", 0.1);
+                        .attr("opacity", 0.08);
 
                     // Badge border
                     group.append("rect")
                         .attr("x", skillX)
                         .attr("y", skillY)
                         .attr("width", skillWidth)
-                        .attr("height", 22)
-                        .attr("rx", 6)
+                        .attr("height", 24)
+                        .attr("rx", 7)
                         .attr("fill", "none")
                         .attr("stroke", exp.color)
-                        .attr("stroke-width", 1)
-                        .attr("opacity", 0.35);
+                        .attr("stroke-width", 1.2)
+                        .attr("opacity", 0.4);
 
                     group.append("text")
                         .attr("x", skillX + skillWidth / 2)
-                        .attr("y", skillY + 14)
+                        .attr("y", skillY + 15.5)
                         .attr("text-anchor", "middle")
                         .attr("fill", exp.color)
-                        .attr("font-size", "10px")
-                        .attr("font-weight", "700")
+                        .attr("font-size", "10.5px")
+                        .attr("font-weight", "800")
+                        .attr("letter-spacing", "0.3px")
                         .text(skill);
 
-                    skillX += skillWidth + 8;
+                    skillX += skillWidth + 10;
                 });
 
                 // Connector line from box to timeline (simpler, cleaner)
